@@ -50,4 +50,8 @@ public class TestController {
     public  Object userResponse(@RequestBody HashMap<String,Object> userResponse){
         return performanceService.generateResult(userResponse);
     }
+    @GetMapping("/leaderBoard")
+    public  Object leaderBoard(){
+        return performanceService.generateLeaderBoard();
+    }
 }

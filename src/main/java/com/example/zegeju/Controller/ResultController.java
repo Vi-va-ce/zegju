@@ -23,4 +23,9 @@ public class ResultController {
         return resultService.getStudentAnalysis(test_id);
 
     }
+    @PostMapping("/registertestCatagory")
+    public Object putTest(@RequestBody Object testCatagory) {
+
+        return resultService.registerCatagory(testCatagory);
+    }
 }
