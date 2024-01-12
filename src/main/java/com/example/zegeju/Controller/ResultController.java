@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
+
 @RestController
-@CrossOrigin
 @RequestMapping(path = "/api/v3/student")
 
 
@@ -28,4 +28,7 @@ public class ResultController {
 
         return resultService.registerCatagory(testCatagory);
     }
+
+
+
 }

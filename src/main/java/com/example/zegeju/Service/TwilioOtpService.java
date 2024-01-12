@@ -88,6 +88,17 @@ public class TwilioOtpService {
 //            }
 //
 
+//public void sendSms(PhoneAuthRequest phone) {
+//
+//    PhoneAuthProvider.getInstance().verifyPhoneNumber(
+//            phone.getPhoneNumber(),
+//            60L,
+//            TimeUnit.SECONDS,
+//            Executors.newScheduledThreadPool(1),
+//            callbacks
+//    );
+//
+//}
     public void sendOTP(String phone_Number, String otp) {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
 //        Message message = Message.creator(

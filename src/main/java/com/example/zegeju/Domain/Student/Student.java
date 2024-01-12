@@ -8,12 +8,12 @@ import java.util.Date;
 @Getter
 @Setter
 public class Student {
-    private String education_status;
-    private String Fname;
-    private String Lname;
+    private String educationStatus;
+    private String firstName;
+    private String lastName;
     private String email;
     private String password;
-    private int phone_no;
+    private int phoneNumber;
     private int otp;
     private Date otpExpiry;
     private boolean verified;

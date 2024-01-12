@@ -11,8 +11,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
+
+
 @RestController
-@CrossOrigin
 @RequestMapping(path = "/api/v2/student")
 
 public class TestController {
@@ -24,9 +25,20 @@ public class TestController {
     @Autowired
     private PerformanceService performanceService;
 
-    @GetMapping("/getTest")
+    @GetMapping("/getPracticeTest")
     public Object getTest(@RequestParam String test_id) throws ExecutionException, InterruptedException, IOException {
         return testService.getTest(test_id);
+
+    }
+    @GetMapping("/getFinalTest")
+    public Object getFinalTest(@RequestParam String test_id) throws ExecutionException, InterruptedException, IOException {
+        return testService.getTest(test_id);
+
+    }
+
+    @GetMapping("/diagnosticTest")
+    public Object getDiagnosingTest( ) throws ExecutionException, InterruptedException, IOException {
+        return testService.getTest("diagnostic_testOne");
 
     }
     @PostMapping("/Test")
@@ -49,6 +61,11 @@ public class TestController {
     @PostMapping("/userResponse")
     public  Object userResponse(@RequestBody HashMap<String,Object> userResponse){
         return performanceService.generateResult(userResponse);
+    }
+    @GetMapping("/dashBoardData")
+    public Object getDashBoardData(@RequestParam String use_id) throws ExecutionException, InterruptedException, IOException {
+        return performanceService.getDashBoardData(use_id);
+
     }
     @GetMapping("/leaderBoard")
     public  Object leaderBoard(){

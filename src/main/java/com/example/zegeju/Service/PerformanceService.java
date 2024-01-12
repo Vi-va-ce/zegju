@@ -4,14 +4,18 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.cloud.FirestoreClient;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Service
 public class PerformanceService {
+    private ConversionService conversionService;
     public Object generateResult(HashMap<String,Object> userResponse) {
         /* Generate  dashboard DATA*/
 //        saveDashboardData(userResponse);
@@ -33,8 +37,8 @@ public class PerformanceService {
             if (documentSnap.exists()){
                 Object scoringDoc = documentSnap.toObject(Object.class);
                 scoring= (HashMap<String,Object>) scoringDoc;
-            }
 
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -335,8 +339,8 @@ public class PerformanceService {
             dashboardData.put(Reading_and_Writing_subscores,readingAndWriting);
             dashboardData.put(Math_subscores,Math_subscore);
             dashboardData.put(cross_test,crossTest);
-            dashboardData.put("useid",userResponse.get("use_id"));
-            //generateDashboardData(dashboardData);
+            dashboardData.put("use_id",userResponse.get("use_id"));
+
 
             //// The test row result
 
@@ -361,12 +365,9 @@ public class PerformanceService {
             response.put("use_id",userResponse.get("use_id"));
             response.put("section-scores",section_Scores);
 
-//            if (true){
-//                System.out.println(dashboardData);;
-//            }
 
-
-            return generateSectionTestScore(section_Scores,userid );
+            if (true) generateDashboardData(dashboardData);
+            return generateSectionTestScore(section_Scores,userid,scoring );
 
 
         }
@@ -385,12 +386,33 @@ public class PerformanceService {
 
     }
 
-    private Object generateSectionTestScore(HashMap<String, Long> testData, String userId) {
+    private Object generateSectionTestScore(HashMap<String, Long> testData, String userId, HashMap<String, Object> scoring) {
 
         long writingScore= testData.get("Writing_Section_Score");
         long mathCalcScore= testData.get("Math_Calculator_Score");
         long mathNoCalcScore= testData.get("Math_No_Calculator_Score");
         long readingScore= testData.get("Reading_Section_Score");
+
+        String readingScoreScaled= String.valueOf(readingScore);
+        String writingScoreScaled= String.valueOf(writingScore);
+        String mathCalcScoreScaled= String.valueOf(mathCalcScore);
+        String mathNoCalcScoreScaled= String.valueOf(mathNoCalcScore);
+        HashMap<String, Long>SAT_ENGLISH= (HashMap<String, Long>) scoring.get("SAT_ENGLISH");
+        HashMap<String, Object>SAT_MATH= (HashMap<String, Object>) scoring.get("SAT_MATH");
+
+        String xx= String.valueOf((SAT_ENGLISH.get(readingScoreScaled)));
+        String xx1= String.valueOf((SAT_ENGLISH.get(writingScoreScaled)));
+        String xx2= String.valueOf((SAT_ENGLISH.get(mathCalcScoreScaled)));
+        String xx3= String.valueOf((SAT_ENGLISH.get(mathNoCalcScoreScaled)));
+        long readingOutOf400=Long.valueOf(xx);
+        long writingOutOf400= Long.valueOf(xx1);
+        long mathCalcOutOf400= Long.valueOf(xx2);
+        long mathNoCalcOutOf400= Long.valueOf(xx3);
+        HashMap<String, Long>totalScore= new HashMap<>();
+        long totalscore=readingOutOf400+writingOutOf400+mathCalcOutOf400+mathNoCalcOutOf400;
+        totalScore.put("totalScore",totalscore);
+
+
 
         //// the out put data structures
         String userid= userId;
@@ -441,7 +463,6 @@ public class PerformanceService {
         HashMap <String,Long>total_wrong_answers=new HashMap<>();
         long totalWrongAnswer=100- totalRightAnswer;
         total_wrong_answers.put(score,totalWrongAnswer);
-
         mainSection.put(total_wrong_answer,total_wrong_answers);
 
 
@@ -467,10 +488,131 @@ public class PerformanceService {
         testResultoutData.put(subSections,subSection);
         testResultoutData.put(mainSections,mainSection);
         testResultoutData.put(twoSections,twoSection);
+        testResultoutData.put("scoreInTheCircle",totalScore);
+        //registerLeaderBoard(totalscore,userId);
 
-
+        registerTestResult(testResultoutData,userid);
         return testResultoutData;
     }
+
+    public Object registerTestResult(HashMap<String,Object> questionCatagory, String userId) {
+
+        Firestore zgjUfirestore = FirestoreClient.getFirestore();
+        String user_Id= userId;
+
+        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("testResultData").document(user_Id).set(questionCatagory);
+        try {
+            return collectionApifuture.get().getUpdateTime().toString();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public Object generateLeaderBoard() {
+        Firestore zgjUfirestore = FirestoreClient.getFirestore();
+        DocumentReference documentReference = zgjUfirestore.collection("leaderBoard").document("leaderBoard");
+        ApiFuture<DocumentSnapshot> future = documentReference.get();
+        DocumentSnapshot documentSnapshot = null;
+        try {
+            documentSnapshot = future.get();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        Object document;
+        if (documentSnapshot.exists()) {
+
+            // document exists
+
+            document = documentSnapshot.toObject(Object.class);
+            HashMap<String, Object> hashMapData = (HashMap<String, Object>) document;
+
+            return hashMapData;
+
+
+        }
+
+        return "no test is found";
+    }
+
+//    public Object registerLeaderBoard(long score, String userId){
+//
+//        //if condition if there is a score registered in that user_ID,  get the hashmap, delete the map, then re
+//
+//        ///else condition register
+//
+//
+//
+//
+//
+//
+//        Firestore zgjUfirestore = FirestoreClient.getFirestore();
+//
+//        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("leaderBoard").document("leaderBoard").set(score);
+//        try {
+//            return collectionApifuture.get().getUpdateTime().toString();
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        } catch (ExecutionException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
+////    public Void generateLeaderBoard() {
+//////        Firestore zgjUfirestore = FirestoreClient.getFirestore();
+//////        DocumentReference documentReference = zgjUfirestore.collection("leaderBoard").document("leaderBoard");//// the data must be according to this user id as a key of a hashmap that has name and score of that student
+////        ApiFuture<DocumentSnapshot> future2 = documentReference.get();
+////        DocumentSnapshot documentSnapshotlead = null;
+////        try {
+////            documentSnapshotlead = future2.get();
+////        } catch (InterruptedException e) {
+////            throw new RuntimeException(e);
+////        } catch (ExecutionException e) {
+////            throw new RuntimeException(e);
+////        }
+//
+//
+//
+//
+//        Object document;
+//        if (documentSnapshotlead.exists()) {
+//
+//            // document exists
+//
+//            document = documentSnapshotlead.toObject(Object.class);
+//            HashMap<String, Object> leaderBoardData = (HashMap<String, Object>) document;
+//
+//            HashMap<String,Object>leaderBoardOutData= new HashMap<>();
+//
+//
+//            /////i need to map the user id and the user total sscore
+//
+//            //return leaderBoardData;
+//            Set<String> keys = leaderBoardData.keySet();
+//            HashMap<String,Object>value= new HashMap<>();
+//            HashMap<String, Long> userTOScoreMap= new HashMap<>();
+//
+//            // Iterate over the keys and print them
+//            for (String key : keys) {
+//                value= (HashMap<String, Object>) leaderBoardData.get(key);
+//                userTOScoreMap.put(key, (Long) value.get("score"));
+//            }
+//            HashMap<String, Long> temporary= sortHashMapByValues(userTOScoreMap);
+//            Set<String> sortedKeys = leaderBoardData.keySet();
+//            for (String key : sortedKeys) {
+//                leaderBoardOutData.put(key,leaderBoardData.get(key));
+//            }
+//            return leaderBoardOutData;
+//        }
+//
+//
+//
+//        return null;
+//    }
 
 
 
@@ -800,7 +942,6 @@ public class PerformanceService {
 
 
         secondSection2.put(passport_advanced_math2,passportAdvancedMath1);
-
         HashMap<String,Object> average_1 = new HashMap<>();
         String average_right_answer_1="average";
         String average_right_answer1_1 ="right_answer";
@@ -894,59 +1035,52 @@ public class PerformanceService {
         dashboardDisplayData.put(Reading_and_Writing_subscores, readingAndWriting);
         dashboardDisplayData.put(Math_subscores,Math_subscore);
         dashboardDisplayData.put(cross_test,crossTest);
-        return dashboardDisplayData;
+        return registerDashboardData(dashboardDisplayData,userId);
+
     }
 
-    public Object generateLeaderBoard() {
+
+    public Object registerDashboardData(HashMap<String,Object> questionCatagory, String userId) {
+
         Firestore zgjUfirestore = FirestoreClient.getFirestore();
-        DocumentReference documentReference = zgjUfirestore.collection("leaderBoard").document("leaderboard1");//// the data must be according to this user id as a key of a hashmap that has name and score of that student
-        ApiFuture<DocumentSnapshot> future2 = documentReference.get();
-        DocumentSnapshot documentSnapshotlead = null;
+        String user_Id= (String) questionCatagory.get("use_id");
+
+        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("dashboard_data").document(user_Id).set(questionCatagory);
         try {
-            documentSnapshotlead = future2.get();
+            return collectionApifuture.get().getUpdateTime().toString();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public Object getDashBoardData(String use_id) throws ExecutionException, InterruptedException, IOException {
+        Firestore zgjUfirestore = FirestoreClient.getFirestore();
+        DocumentReference documentReference = zgjUfirestore.collection("dashboard_data").document(use_id);
+        ApiFuture<DocumentSnapshot> future = documentReference.get();
+        DocumentSnapshot documentSnapshot = future.get();
 
 
         Object document;
-        if (documentSnapshotlead.exists()) {
+        if (documentSnapshot.exists()) {
 
             // document exists
 
-            document = documentSnapshotlead.toObject(Object.class);
-            HashMap<String, Object> leaderBoardData = (HashMap<String, Object>) document;
+            document = documentSnapshot.toObject(Object.class);
+            HashMap<String, Object> hashMapData = (HashMap<String, Object>) document;
 
-            HashMap<String,Object>leaderBoardOutData= new HashMap<>();
+            return hashMapData;
 
 
-            /////i need to map the user id and the user total sscore
-
-            //return leaderBoardData;
-            Set<String> keys = leaderBoardData.keySet();
-            HashMap<String,Object>value= new HashMap<>();
-            HashMap<String, Long> userTOScoreMap= new HashMap<>();
-
-            // Iterate over the keys and print them
-            for (String key : keys) {
-                value= (HashMap<String, Object>) leaderBoardData.get(key);
-                userTOScoreMap.put(key, (Long) value.get("score"));
-            }
-            HashMap<String, Long> temporary= sortHashMapByValues(userTOScoreMap);
-            Set<String> sortedKeys = leaderBoardData.keySet();
-            for (String key : sortedKeys) {
-                leaderBoardOutData.put(key,leaderBoardData.get(key));
-            }
-            return leaderBoardOutData;
         }
 
-
-
-        return null;
+        return "no dashboard data is found";
     }
+
+
+
+
     public static LinkedHashMap<String, Long> sortHashMapByValues(HashMap<String, Long> hashMap) {
         List<Map.Entry<String, Long>> list = new LinkedList<>(hashMap.entrySet());
 
@@ -962,4 +1096,6 @@ public class PerformanceService {
         }
         return sortedMap;
     }
+
+
 }

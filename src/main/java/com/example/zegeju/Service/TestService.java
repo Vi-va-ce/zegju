@@ -6,19 +6,20 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
-
+@CrossOrigin(origins="http://192.168.144.71:5173/")
 @Service
 public class TestService {
 
     public Object getTest(String test_id) throws ExecutionException, InterruptedException, IOException {
         Firestore zgjUfirestore = FirestoreClient.getFirestore();
        DocumentReference documentReference = zgjUfirestore.collection("tests").document(test_id);
-        ApiFuture<DocumentSnapshot> future = documentReference.get();
-        DocumentSnapshot documentSnapshot = future.get();
+       ApiFuture<DocumentSnapshot> future = documentReference.get();
+       DocumentSnapshot documentSnapshot = future.get();
 
 
         Object document;
@@ -50,9 +51,7 @@ public class TestService {
         Questions question = new Questions();
         question.setQuestion_id("ch_1");
         question.setQuestion_text("Solve for x: 2x + 3 = 7");
-//        question.setChoose_A("x = 2");
 
-//        question.setChoose_D("X=9");
         question.setSub_section("Algebra");
 
 // Add the question to the question type
