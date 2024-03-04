@@ -102,7 +102,7 @@ public class TestService {
 //        Test test1= (Test)test;
         HashMap<String, Object> hashMapData = (HashMap<String, Object>) test;
         String testIdd= hashMapData.keySet().iterator().next();
-        String test_Id= (String) hashMapData.get(testIdd);
+        String test_Id= (String) hashMapData.get("test_id");
 
 //        if(true){
 //            return hashMapData;

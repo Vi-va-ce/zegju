@@ -6,6 +6,7 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.cloud.FirestoreClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +17,20 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class PerformanceService {
     private ConversionService conversionService;
-    public Object generateResult(HashMap<String,Object> userResponse) {
+
+    @Autowired
+    private SectionsPerformanceService sectionsPerformanceService;
+    public Object generateResult(HashMap<String,Object> userResponses) throws ExecutionException, InterruptedException {
         /* Generate  dashboard DATA*/
 //        saveDashboardData(userResponse);
 
         /* USER RESPONSE DATA*/
+        // if the data.
+        ////
+        //System.out.println(userResponses);
+       // if (true)return (sectionsPerformanceService.generateResult(userResponses));
+        HashMap<String,Object> userResponse= (HashMap<String, Object>) sectionsPerformanceService.generateResult(userResponses);
+        //System.out.println(userResponse);
         HashMap<String,Object>responseData= (HashMap<String, Object>) userResponse;
 
         Firestore zgjUfirestore = FirestoreClient.getFirestore();
@@ -180,7 +190,11 @@ public class PerformanceService {
             long reading_score=0;
 
             for (int i =0 ; i < responseQuestions1.size(); i++){
-                if (responseQuestions1.get(i).get("response").equals(answerQuestions1.get(i).get("answer")))
+                String answerID= (String) answerQuestions1.get(i).get("answer");
+                String responseId= (String) responseQuestions1.get(i).get("response");
+                String lastTwoElementsAnswer = answerID.substring(Math.max(0, answerID.length() - 2));
+                String lastTwoElementsResponse = responseId.substring(Math.max(0, responseId.length() - 2));
+                if (lastTwoElementsResponse.equals(lastTwoElementsAnswer))
                  {
                     reading_score++;
                     String question_id= (String) responseQuestions1.get(i).get("question_id");
@@ -221,7 +235,11 @@ public class PerformanceService {
             long writing_score=0;
 
             for (int i =0 ; i < responseQuestions2.size(); i++){
-                if (responseQuestions2.get(i).get("response").equals(answerQuestions2.get(i).get("answer")))
+                String answerID= (String) answerQuestions2.get(i).get("answer");
+                String responseId= (String) responseQuestions2.get(i).get("response");
+                String lastTwoElementsAnswer = answerID.substring(Math.max(0, answerID.length() - 2));
+                String lastTwoElementsResponse = responseId.substring(Math.max(0, responseId.length() - 2));
+                if (lastTwoElementsResponse.equals(lastTwoElementsAnswer))
                 {
                     writing_score++;
                     String question_id= (String) responseQuestions2.get(i).get("question_id");
@@ -256,7 +274,11 @@ public class PerformanceService {
             long math_calculator_score=0;
 
             for (int i =0 ; i < responseQuestions3.size(); i++){
-                if (responseQuestions3.get(i).get("response").equals(answerQuestions3.get(i).get("answer")))
+                String answerID= (String) answerQuestions3.get(i).get("answer");
+                String responseId= (String) responseQuestions3.get(i).get("response");
+                String lastTwoElementsAnswer = answerID.substring(Math.max(0, answerID.length() - 2));
+                String lastTwoElementsResponse = responseId.substring(Math.max(0, responseId.length() - 2));
+                if (lastTwoElementsResponse.equals(lastTwoElementsAnswer))
                 {
                     math_calculator_score++;
                     String question_id= (String) responseQuestions3.get(i).get("question_id");
@@ -286,7 +308,11 @@ public class PerformanceService {
             long math_no_calculator_score=0;
 
             for (int i =0 ; i < responseQuestions4.size(); i++){
-                if (responseQuestions4.get(i).get("response").equals(answerQuestions4.get(i).get("answer")))
+                String answerID= (String) answerQuestions4.get(i).get("answer");
+                String responseId= (String) responseQuestions4.get(i).get("response");
+                String lastTwoElementsAnswer = answerID.substring(Math.max(0, answerID.length() - 2));
+                String lastTwoElementsResponse = responseId.substring(Math.max(0, responseId.length() - 2));
+                if (lastTwoElementsResponse.equals(lastTwoElementsAnswer))
                 {
                     math_no_calculator_score++;
                     String question_id= (String) responseQuestions4.get(i).get("question_id");
@@ -367,7 +393,7 @@ public class PerformanceService {
 
 
             if (true) generateDashboardData(dashboardData);
-            return generateSectionTestScore(section_Scores,userid,scoring );
+            return generateSectionTestScore(section_Scores,userid,scoring);
 
 
         }
@@ -392,22 +418,25 @@ public class PerformanceService {
         long mathCalcScore= testData.get("Math_Calculator_Score");
         long mathNoCalcScore= testData.get("Math_No_Calculator_Score");
         long readingScore= testData.get("Reading_Section_Score");
-
-        String readingScoreScaled= String.valueOf(readingScore);
-        String writingScoreScaled= String.valueOf(writingScore);
-        String mathCalcScoreScaled= String.valueOf(mathCalcScore);
-        String mathNoCalcScoreScaled= String.valueOf(mathNoCalcScore);
+        System.out.println(testData);
+        String readingScoreString= String.valueOf(readingScore);
+        String writingScoreString= String.valueOf(writingScore);
+        String mathCalcScoreString= String.valueOf(mathCalcScore);
+        String mathNoCalcScoreString= String.valueOf(mathNoCalcScore);
+        System.out.println(readingScoreString);
         HashMap<String, Long>SAT_ENGLISH= (HashMap<String, Long>) scoring.get("SAT_ENGLISH");
-        HashMap<String, Object>SAT_MATH= (HashMap<String, Object>) scoring.get("SAT_MATH");
+        HashMap<String, Long>SAT_MATH= (HashMap<String, Long>) scoring.get("SAT_MATH");
 
-        String xx= String.valueOf((SAT_ENGLISH.get(readingScoreScaled)));
-        String xx1= String.valueOf((SAT_ENGLISH.get(writingScoreScaled)));
-        String xx2= String.valueOf((SAT_ENGLISH.get(mathCalcScoreScaled)));
-        String xx3= String.valueOf((SAT_ENGLISH.get(mathNoCalcScoreScaled)));
+        String xx= String.valueOf((SAT_ENGLISH.get(readingScoreString)));
+        String xx1= String.valueOf((SAT_ENGLISH.get(writingScoreString)));
+        String xx2= String.valueOf((SAT_MATH.get(mathCalcScoreString)));
+        String xx3= String.valueOf((SAT_MATH.get(mathNoCalcScoreString)));
+        //System.out.println((SAT_ENGLISH.get(readingScoreString)));
         long readingOutOf400=Long.valueOf(xx);
         long writingOutOf400= Long.valueOf(xx1);
         long mathCalcOutOf400= Long.valueOf(xx2);
         long mathNoCalcOutOf400= Long.valueOf(xx3);
+        //System.out.println(readingOutOf400);
         HashMap<String, Long>totalScore= new HashMap<>();
         long totalscore=readingOutOf400+writingOutOf400+mathCalcOutOf400+mathNoCalcOutOf400;
         totalScore.put("totalScore",totalscore);
@@ -471,15 +500,16 @@ public class PerformanceService {
         String twoSections="twoSections";
         HashMap <String,Object>twoSection=new HashMap<>();
         String sat_english="sat_english";
-        HashMap <String,Long>sat_englsh=new HashMap<>();
-        long satEnglish=0;
+        HashMap <String,Float>sat_englsh=new HashMap<>();
+
+        float satEnglish=((readingScore+writingScore)*50)/66;
         sat_englsh.put(score,satEnglish);
-        twoSection.put(sat_english,satEnglish);
-
-
+        twoSection.put(sat_english,sat_englsh);
+//Generating Raw Score
+        generateRawDiagnosticScoreForSections(writingScore+readingScore,mathCalcScore+mathNoCalcScore,userId);
         String sat_math="sat_math";
-        HashMap <String,Long>sat_maths=new HashMap<>();
-        long satMath=0;
+        HashMap <String,Float>sat_maths=new HashMap<>();
+        float satMath=(mathCalcScore+mathNoCalcScore*50)/54;
         sat_maths.put(score,satMath);
         twoSection.put(sat_math,sat_maths);
 
@@ -495,12 +525,39 @@ public class PerformanceService {
         return testResultoutData;
     }
 
+    private String generateRawDiagnosticScoreForSections(long l, long l1, String userId) {
+        String testId="diagnostic_testOne";
+        Firestore zgjUfirestore = FirestoreClient.getFirestore();
+        String user_Id= userId;
+        HashMap<String,Long>rawTestScore=new HashMap<>();
+        HashMap<String, HashMap<String, Long>> map=new HashMap<>();
+        rawTestScore.put("sat_english",l);
+        rawTestScore.put("sat_math",l1);
+
+        map.put(testId,rawTestScore);
+        HashMap<String,Long> map2=new HashMap<>();
+        map2.put("correct", l*0);
+
+
+        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("rawDiagnosticScore").document("welde.gesesse@gmail.com").set(map);
+        ApiFuture<WriteResult> collectionApifuture2 = zgjUfirestore.collection("practiceTestRealTimeScore").document("welde.gesesse@gmail.com").set(map2);
+        try {
+            collectionApifuture2.get().getUpdateTime().toString();
+            return collectionApifuture.get().getUpdateTime().toString();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public Object registerTestResult(HashMap<String,Object> questionCatagory, String userId) {
 
         Firestore zgjUfirestore = FirestoreClient.getFirestore();
         String user_Id= userId;
 
-        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("testResultData").document(user_Id).set(questionCatagory);
+        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("testResultData").document("welde.gesesse@gmail.com").set(questionCatagory);
         try {
             return collectionApifuture.get().getUpdateTime().toString();
         } catch (InterruptedException e) {
@@ -623,7 +680,6 @@ public class PerformanceService {
         HashMap<String,Object>cross_tst=(HashMap<String, Object>) dashboardData.get("cross_test");
         HashMap<String,Object>Math_scores=(HashMap<String, Object>) dashboardData.get("Math_subscores");
         long comd_evdnc= (long) reading_writing.get("command_of_evidence");
-
         long wrds_Incntxt= (long) reading_writing.get("words_in_context");
         long expr_idea= (long) reading_writing.get("expression_of_Ideas");
         long hrt_algbra=(long)Math_scores.get("heart_of_algebra");
@@ -1031,11 +1087,12 @@ public class PerformanceService {
         crossTest.put(science_score,scienceScore);
         crossTest.put(history_scor,historyScore);
         String userId= (String) dashboardData.get("use_id");
-        dashboardDisplayData.put("use_id",userId);
+        dashboardDisplayData.put("use_id","welde.gesesse@gmail.com");
         dashboardDisplayData.put(Reading_and_Writing_subscores, readingAndWriting);
         dashboardDisplayData.put(Math_subscores,Math_subscore);
         dashboardDisplayData.put(cross_test,crossTest);
-        return registerDashboardData(dashboardDisplayData,userId);
+//        System.out.println(dashboardDisplayData);
+        return registerDashboardData(dashboardDisplayData,"welde.gesesse@gmail.com");
 
     }
 
@@ -1044,8 +1101,9 @@ public class PerformanceService {
 
         Firestore zgjUfirestore = FirestoreClient.getFirestore();
         String user_Id= (String) questionCatagory.get("use_id");
+       // System.out.println(questionCatagory);
 
-        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("dashboard_data").document(user_Id).set(questionCatagory);
+        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("dashboard_data").document(userId).set(questionCatagory);
         try {
             return collectionApifuture.get().getUpdateTime().toString();
         } catch (InterruptedException e) {

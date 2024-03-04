@@ -85,7 +85,7 @@ public class StudentProfileService {
         Object document;
         if (documentSnapshot.exists()) {
 
-            // document exists
+            // document existsh
 
             document = documentSnapshot.toObject(Object.class);
             HashMap<String, Object> hashMapData = (HashMap<String, Object>) document;
@@ -119,6 +119,32 @@ public class StudentProfileService {
 
         }
 
+        return null;
+    }
+    public String updateUserPassword(String email,String password) throws ExecutionException, InterruptedException {
+
+        Firestore zgjUfirestore = FirestoreClient.getFirestore();
+        CollectionReference documentReference = zgjUfirestore.collection("student_user");
+        Query query = documentReference.whereEqualTo("email", email);
+        ApiFuture<QuerySnapshot> future = query.get();
+        QuerySnapshot querySnapshot = future.get();
+        Student student;
+        if (!querySnapshot.isEmpty()) {
+
+            // document exists
+            DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+            DocumentReference docRef = querySnapshot.getDocuments().get(0).getReference();
+
+            if (document.exists()) {
+
+                docRef.update("password", password);
+
+                System.out.println("User password updated successfully!");
+            } else {
+                System.out.println("User not found!");
+            }
+            return null;
+        }
         return null;
     }
     public String updateStudent(Student stud) {

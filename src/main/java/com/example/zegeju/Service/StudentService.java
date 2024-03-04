@@ -1,18 +1,26 @@
 package com.example.zegeju.Service;
 
+import com.example.zegeju.Domain.PhoneRequest;
 import com.example.zegeju.Domain.Student.Student;
-import com.example.zegeju.Domain.Test.LogInParameters;
+import com.example.zegeju.Domain.logInResponse;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-
+import jakarta.servlet.http.Cookie;
+import org.springframework.http.*;
 import com.google.firebase.cloud.FirestoreClient;
-import io.jsonwebtoken.*;
+
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Date;
+import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 
@@ -21,9 +29,18 @@ public class   StudentService {
     @Autowired
     private TwilioOtpService twilioOtpService;
 
+    @Autowired
+    private JwtTokenGenerator jwtTokenGenerator;
+    @Autowired
+    private MapService mapService;
 
+    @Autowired
+    private HomePageGenerator homePageGenerator;
+
+    private final String apiKey="AIzaSyArBtsAD7LO_M-nKKH1YGzKoNRoB2yze98";
 
     public String createStudent(Student stud) throws ExecutionException, InterruptedException {
+        System.out.println(stud);
         Firestore zgjUfirestore = FirestoreClient.getFirestore();
         int otp = Integer.parseInt(RandomStringUtils.randomNumeric(6));
         stud.setOtp(otp);
@@ -36,6 +53,8 @@ public class   StudentService {
       //  twilioOtpService.sendOTP("+251"+String.valueOf(stud.getPhoneNumber()),String.valueOf(stud.getOtp()));
         //        FirebaseToken token = firebaseAuth.generatePhoneAuthCode(xphoneNumber);
 //        String verificationId = token.getUid();
+
+        //authenticatePhoneNumber("+251"+String.valueOf(stud.getPhoneNumber()),String.valueOf(stud.getOtp()) );
         CollectionReference documentReference = zgjUfirestore.collection("student_user");
         String email = stud.getEmail();
         Query query = documentReference.whereEqualTo("email", email);
@@ -45,6 +64,7 @@ public class   StudentService {
         if (querySnapshot.isEmpty()) {
 
             ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("student_user").document(stud.getFirstName()).set(stud);
+            homePageGenerator.generateHomePageData(email);
             return collectionApifuture.get().getUpdateTime().toString();
         }
 
@@ -56,7 +76,50 @@ public class   StudentService {
 //import okhttp3.OkHttpClient;
 //import okhttp3.Request;
 //import okhttp3.Response;
-    
+public void authenticatePhoneNumber(String phoneNumber, String verificationCode) {
+    RestTemplate restTemplate = new RestTemplate();
+
+    //headers.set("Authorization", "Bearer AIzaSyArBtsAD7LO_M-nKKH1YGzKoNRoB2yze98");
+    // Set request headers
+    //the request body
+    String requestBody = String.format("{\"phoneNumber\": \"%s\", \"code\": \"%s\"}", phoneNumber, verificationCode);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("User-Agent", "zegeju/1.0");
+
+
+
+    UriComponentsBuilder builder = UriComponentsBuilder
+            .fromUriString("https://identitytoolkit.googleapis.com/v1/accounts:sendVerificationCode")
+            .queryParam("key", apiKey);
+
+    URI uri = builder.build().toUri();
+    PhoneRequest request = new PhoneRequest();
+    request.setRequestType("VERIFY_PHONE_NUMBER");
+    request.setPhoneNumber(phoneNumber);
+    String url = "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=" + apiKey;
+    //ResponseEntity<OobResponse> response = restTemplate.postForEntity(url, request, OobResponse.class);
+
+    ResponseEntity<String> response = restTemplate.exchange(
+            uri,
+            HttpMethod.POST,
+            new HttpEntity<>(requestBody, headers),
+            String.class);
+
+
+
+
+    // Prepare
+
+
+    // Make the reques
+    if (response.getStatusCode().is2xxSuccessful()) {
+        String responseBody = response.getBody();
+
+    } else {
+        // Handle the error response
+    }
+}
 
 
     public Student getStudent(String email) throws ExecutionException, InterruptedException {
@@ -143,14 +206,41 @@ public class   StudentService {
         ApiFuture<QuerySnapshot> future = query.get();
         QuerySnapshot results = future.get();
 
+ /* there will a condition here to know where the test taker is
+    then the after determining where the test taker is the set the userMap collection
+    {"user_id":"weldegebrial Belete",
+      "map":{
+                "diagnosticTest":{
+                    "WhereIsTheUser":"MathCalculator"
+                },
+                "practiceTest":{
+                "WhereIsTheUser:"NotStarted"
+                },
+                "finalTest":{
+                "WhereIsTheUser:"NotStarted"
+                }
+      }
+    }
+    and return the where the user is which ia not "NotStarted" and "AllDone"
+     */
+        HashMap<String,Object>mapMap=new HashMap<>();
+        HashMap<String,Object>diagnosticMap=new HashMap<>();
+        HashMap<String,Object>practiceMap=new HashMap<>();
+        HashMap<String,Object>finalMap=new HashMap<>();
+        diagnosticMap.put("WhereIsTheUser","MathCalculator");
+        practiceMap.put("WhereIsTheUser","NotActivated");
+        finalMap.put("WhereIsTheUser","NotActivated");
 
+        //mapMap.put("user_id",email);
+        mapMap.put("diagnosticTest",diagnosticMap);
+        mapMap.put("practiceTest",practiceMap);
+        mapMap.put("finalTest",finalMap);
+        mapService.registerMapData(mapMap,email);
         if (results.isEmpty()) {
             return "No Student is found with the email";
-
         }
 
         DocumentSnapshot doc = results.getDocuments().get(0);
-
         String storedPassword = doc.getString("password");
 
         if (!storedPassword.equals(password)) {
@@ -158,54 +248,41 @@ public class   StudentService {
             return "incorrect password" ;
         }
         else {
-            String login="login Successful";
-            String token=generateToken(email+password);
-            HashMap<String,String>logInToken= new HashMap<>();
-            logInToken.put("log_in_Status", login);
-            logInToken.put("user_token", token);
-            System.out.println(logInToken);
-            return logInToken;
+
+            String accessToken=jwtTokenGenerator.generateAccessToken(email);
+            String refreshToken=jwtTokenGenerator.generateRefreshToken(email);
+            Cookie refreshTokenCookie=new Cookie("refresh_token", refreshToken);
+            Cookie accessTokenCookie = new Cookie("access_token", accessToken);
+
+            refreshTokenCookie.setPath("/");
+            accessTokenCookie.setPath("/");
+            HashMap<String,Object>logInToken= new HashMap<>();
+            logInToken.put("accessToken", accessToken);
+            logInToken.put("refreshToken",refreshToken);
+//            logInToken.put("expiration",jwtTokenGenerator.extractClaims(accessToken).getExpiration().getTime());
+
+            return logInResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
         }
+
 
 //       return generateToken(email+password);
-    }
-
-    public static String generateToken(String subject){
-        final String SECRET_KEY = "ab1c23d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f6789ab1c23d4e5f67890a1b2c3d4e5f67890";
-        final long EXPIRATION_TIME = 86400000;
-    // 24 hours
-        Date now = new Date();
-
-        Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
-
-        return Jwts.builder()
-                .setSubject(subject)
-                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
-                .compact();
-
-    }
+}
+//    public static String generateToken(String subject){
+//        final String SECRET_KEY = "ab1c23d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f6789ab1c23d4e5f67890a1b2c3d4e5f67890";
+//        final long EXPIRATION_TIME = 86400000;
+//    // 24 hours
+//        Date now = new Date();
+//
+//        Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
+//
+//        return Jwts.builder()
+//                .setSubject(subject)
+//                .signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+//                .compact();
+//    }
 
 
-    public static String decryptToken(String token) {
-        final String SECRET_KEY = "ab1c23d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f6789ab1c23d4e5f67890a1b2c3d4e5f67890";
 
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(SECRET_KEY)
-                    .parseClaimsJws(token)
-                    .getBody();
-
-            return claims.getSubject();
-        } catch (ExpiredJwtException e) {
-            // Token has expired
-            // Handle accordingly
-        } catch (JwtException e) {
-            // Invalid token
-            // Handle accordingly
-        }
-
-        return null;
-    }
 
     public String changePassword(String email, String password, String otp) throws ExecutionException, InterruptedException {
             //otp then new password
@@ -258,6 +335,35 @@ public class   StudentService {
             else return "There is no user with this email. Please sign up!";
         }
         else return "There is no user with this email. Please sign up!";
+
+    }
+
+    public String uploadVerificationImage(MultipartFile file,String email) throws IOException {
+
+
+        // Upload the image to Firebase Firestore
+        String baseUrl = "http://zegeju.com"; // Replace with your base URL
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("filename", file.getOriginalFilename());
+        data.put("contentType", file.getContentType());
+        data.put("size", file.getSize());
+        String fileUrl = baseUrl + "/uploads/" + file.getOriginalFilename();
+        data.put("url",fileUrl ); // Placeholder for the image URL
+
+        Firestore zgjUfirestore = FirestoreClient.getFirestore();
+        //HashMap<String,Object>questionCatagoryObj= (HashMap<String, Object>) ;
+       // String testId= (String) questionCatagoryObj.get("test_id");
+
+        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("questionsCatagory").document(email).set(data);
+        try {
+            return collectionApifuture.get().getUpdateTime().toString();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 //
