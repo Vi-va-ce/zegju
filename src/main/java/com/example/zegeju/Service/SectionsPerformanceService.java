@@ -20,8 +20,14 @@ public class SectionsPerformanceService {
         //if (true) return (userResponse);
         Set<String> keys= hashMapData.keySet();
         List<String> keyList = new ArrayList<>(keys);
-        String testid= keyList.get(0);//test_id
 
+
+        String testid= keyList.get(0);//test_id
+        if (!testid.contains("test")){
+            testid=keyList.get(1);
+        }
+        System.out.println("am here");
+        System.out.println(testid);
 
         HashMap<String,Object>userResponseSection= (HashMap<String, Object>) userResponse.get(testid);
 
@@ -51,7 +57,7 @@ public class SectionsPerformanceService {
         String responseId="response";
         String questionId="question_id";
 
-        if (testid.contains("diagnostic")&& sectionId.contains("READING")){
+        if (testid.contains("diagnostic")||testid.contains("ractice")&& sectionId.contains("READING")){
             for(String elements:keys3){
                 HashMap<String,Object>userResponsess=new HashMap<>();
                 userResponsess.put(questionId,elements);
@@ -100,13 +106,13 @@ public class SectionsPerformanceService {
 
             HashMap<String,Object>userResponsessTest=new HashMap<>();
             userResponsessTest.put("sections",sections);
-            userResponsessTest.put("test_id","diagnostic_testOne");
+            userResponsessTest.put("test_id",testid);
             System.out.println(userResponsessTest);
             return userResponsessTest;
             ///email should be added here
 
         }
-        else if(testid.contains("diagnostic") && sectionId.contains("WRITING")){
+        else if(testid.contains("diagnostic")||testid.contains("ractice") && sectionId.contains("WRITING")){
 
             for(String elements:keys3){
                 HashMap<String,Object>userResponsess=new HashMap<>();
@@ -123,7 +129,7 @@ public class SectionsPerformanceService {
             HashMap<String,Object>userResponsessTest=new HashMap<>();
             userResponsessTest.put("section",userResponsessSection);
 
-            userResponsessTest.put("test_id","diagnostic_testOne");
+            userResponsessTest.put("test_id",testid);
             return userResponsessTest;
         }
 

@@ -51,10 +51,11 @@ public class TestController {
     @Autowired
     private PracticeTestService practiceTestService;
 
-    @GetMapping("/getPracticeTest")
-    public Object getTest(@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException, IOException {
+    @GetMapping("/getPracticeTest1")
+    public Object getPracticeTest1(@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException, IOException {
         String acccessToken= loginData.get("access_token");
-        String test_id=loginData.get("test_id");
+//        String test_id=loginData.get("test_id");practice_testOne
+        String test_id="practice_testOne";
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
             String email=jwtTokenGenerator.decryptAccessToken(acccessToken);
@@ -67,11 +68,82 @@ public class TestController {
 
 
     }
+    @GetMapping("/getPracticeTest2")
+    public Object getPracticeTest2(@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException, IOException {
+        String acccessToken= loginData.get("access_token");
+        //        String test_id=loginData.get("test_id");
+        String test_id="practice_testTwo";
+        String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
+        if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
+            String email=jwtTokenGenerator.decryptAccessToken(acccessToken);
+            return testService.getTest(test_id);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token")+","+jwtTokenGenerator.extractClaims(acccessToken).getExpiration().getTime();
+        }
+
+
+
+    }
+    @GetMapping("/getPracticeTest3")
+    public Object getPracticeTest3(@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException, IOException {
+        String acccessToken= loginData.get("access_token");
+        //        String test_id=loginData.get("test_id");
+        String test_id="practice_testThree";
+        String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
+        if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
+            String email=jwtTokenGenerator.decryptAccessToken(acccessToken);
+            return testService.getTest(test_id);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token")+","+jwtTokenGenerator.extractClaims(acccessToken).getExpiration().getTime();
+        }
+
+
+
+    }
+    @GetMapping("/getPracticeTest4")
+    public Object getPracticeTest4(@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException, IOException {
+        String acccessToken= loginData.get("access_token");
+        //        String test_id=loginData.get("test_id");
+        String test_id="practice_testFour";
+        String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
+        if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
+            String email=jwtTokenGenerator.decryptAccessToken(acccessToken);
+            return testService.getTest(test_id);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token")+","+jwtTokenGenerator.extractClaims(acccessToken).getExpiration().getTime();
+        }
+
+
+
+    }
+    @GetMapping("/getPracticeTest5")
+    public Object getPracticeTest5(@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException, IOException {
+        String acccessToken= loginData.get("access_token");
+        //        String test_id=loginData.get("test_id");
+        String test_id="practice_testFive";
+        String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
+        if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
+            String email=jwtTokenGenerator.decryptAccessToken(acccessToken);
+            return testService.getTest(test_id);
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token")+","+jwtTokenGenerator.extractClaims(acccessToken).getExpiration().getTime();
+        }
+
+
+
+    }
+
+
+
     @GetMapping("/getFinalTest")
     public Object getFinalTest(@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException, IOException {
         String acccessToken= loginData.get("access_token");
-        String test_id=loginData.get("test_id");
-
+//        String test_id=loginData.get("test_id");
+        String test_id="final_test_one";
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
             String email=jwtTokenGenerator.decryptAccessToken(acccessToken);
@@ -87,6 +159,8 @@ public class TestController {
     @GetMapping("/diagnosticTest")
     public Object getDiagnosingTest(@RequestBody Map<String, String> loginData ) throws ExecutionException, InterruptedException, IOException {
         String acccessToken = loginData.get("access_token");
+        //        String test_id=loginData.get("test_id");
+        String test_id="diagnostic_testOne";
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
             String email=jwtTokenGenerator.decryptAccessToken(acccessToken);
@@ -194,23 +268,23 @@ public class TestController {
         //if (true)return performanceService.getDashBoardData("welde.gesesse@gmail.com");
         String acccessToken=loginData.get("access_token");
 
-//        String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
-//        if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
-//            String emailtoken=jwtTokenGenerator.decryptAccessToken(acccessToken);
+        String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
+        if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {
+            String emailtoken = jwtTokenGenerator.decryptAccessToken(acccessToken);
 
-                String emailtoken= "welde.gesesse@gmail.com";
-           return performanceService.getDashBoardData(emailtoken);
+            //String emailtoken= "welde.gesesse@gmail.com";
+            return performanceService.getDashBoardData(emailtoken);
 
 
-//        String accessToken= new String();
-//        String use_id= new String();
-//        if(tokenManagement.validateToken(accessToken)!="Invalid access token"){
-//            String email=jwtTokenGenerator.decryptAccessToken(accessToken);
-//            return performanceService.getDashBoardData(use_id);
+//            //String accessToken = new String();
+//            String use_id = new String();
+//            if (tokenManagement.validateToken(accessToken) != "Invalid access token") {
+//                String email = jwtTokenGenerator.decryptAccessToken(accessToken);
+//                return performanceService.getDashBoardData(use_id);
 //
-//        }
-
-        //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid access token");
+//            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid access token");
     }
     @GetMapping("/leaderBoard")
     //@RequestBody String accessToken
@@ -232,7 +306,7 @@ public class TestController {
     }
 
     @PostMapping("/practiceTestResult")
-    public Object realTimeTestResult(@RequestBody HashMap<String,Object> userResponse){
+    public Object realTimeTestResult(@RequestBody HashMap<String,Object> userResponse) throws ExecutionException, InterruptedException {
 //    HashMap<String,String>data=new HashMap<>();
 
 //      System.out.println(userResponse);
@@ -247,7 +321,7 @@ public class TestController {
     }
     @GetMapping("/practiceTestResponse")
     //@RequestBody String requestBody
-    public Object generateRealTimeResult(@RequestBody  HashMap<String,Object>userResponse){
+    public Object generateRealTimeResult(@RequestBody  HashMap<String,Object>userResponse) throws ExecutionException, InterruptedException {
         String acccessToken= (String) userResponse.get("access_token");
 
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);

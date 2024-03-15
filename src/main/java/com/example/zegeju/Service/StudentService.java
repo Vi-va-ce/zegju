@@ -2,7 +2,6 @@ package com.example.zegeju.Service;
 
 import com.example.zegeju.Domain.PhoneRequest;
 import com.example.zegeju.Domain.Student.Student;
-import com.example.zegeju.Domain.logInResponse;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import jakarta.servlet.http.Cookie;
@@ -26,13 +25,15 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class   StudentService {
-    @Autowired
-    private TwilioOtpService twilioOtpService;
+//    @Autowired
+//    private TwilioOtpService twilioOtpService;
 
     @Autowired
     private JwtTokenGenerator jwtTokenGenerator;
     @Autowired
     private MapService mapService;
+    @Autowired
+    private ImageService imageService;
 
     @Autowired
     private HomePageGenerator homePageGenerator;
@@ -41,8 +42,10 @@ public class   StudentService {
 
     public String createStudent(Student stud) throws ExecutionException, InterruptedException {
         System.out.println(stud);
+        long phoneNumber=stud.getPhoneNumber();
         Firestore zgjUfirestore = FirestoreClient.getFirestore();
         int otp = Integer.parseInt(RandomStringUtils.randomNumeric(6));
+        stud.setVerified(true);
         stud.setOtp(otp);
 //        PhoneAuthProvider.getInstance().verifyPhoneNumber(
 //                stud.getPhone_no(),
@@ -60,12 +63,20 @@ public class   StudentService {
         Query query = documentReference.whereEqualTo("email", email);
         ApiFuture<QuerySnapshot> future = query.get();
         QuerySnapshot querySnapshot = future.get();
+        Query query2 = documentReference.whereEqualTo("phone_no", phoneNumber);
+        ApiFuture<QuerySnapshot> future2 = query2.get();
+        QuerySnapshot querySnapshot2 = future2.get();
         Student student;
         if (querySnapshot.isEmpty()) {
-
-            ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("student_user").document(stud.getFirstName()).set(stud);
-            homePageGenerator.generateHomePageData(email);
-            return collectionApifuture.get().getUpdateTime().toString();
+            if (querySnapshot2.isEmpty()) {
+                ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("student_user").document(stud.getFirstName()).set(stud);
+                homePageGenerator.generateHomePageData(email);
+                System.out.println(collectionApifuture.get().getUpdateTime().toString());
+            }
+            else {
+                return "Sorry a user with this phone number already exists";
+            }
+            return "registered";
         }
 
         return "Sorry a user with this email already exists";
@@ -257,11 +268,13 @@ public void authenticatePhoneNumber(String phoneNumber, String verificationCode)
             refreshTokenCookie.setPath("/");
             accessTokenCookie.setPath("/");
             HashMap<String,Object>logInToken= new HashMap<>();
-            logInToken.put("accessToken", accessToken);
-            logInToken.put("refreshToken",refreshToken);
+            logInToken.put("status","Log in success!");
+            logInToken.put("access_token",accessToken);
+            logInToken.put("refresh_token",refreshToken);
+
 //            logInToken.put("expiration",jwtTokenGenerator.extractClaims(accessToken).getExpiration().getTime());
 
-            return logInResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
+            return logInToken;
         }
 
 
@@ -284,13 +297,13 @@ public void authenticatePhoneNumber(String phoneNumber, String verificationCode)
 
 
 
-    public String changePassword(String email, String password, String otp) throws ExecutionException, InterruptedException {
+    public String changePassword(long phoneNumber, String password, String otp) throws ExecutionException, InterruptedException {
             //otp then new password
         if(otp=="verified"){
 
             Firestore zgjUfirestore = FirestoreClient.getFirestore();
             CollectionReference documentReference = zgjUfirestore.collection("student_user");
-            Query query = documentReference.whereEqualTo("email", email);
+            Query query = documentReference.whereEqualTo("phoneNumber", phoneNumber);
             ApiFuture<QuerySnapshot> future = query.get();
             QuerySnapshot querySnapshot = future.get();
             Student student2;
@@ -298,21 +311,22 @@ public void authenticatePhoneNumber(String phoneNumber, String verificationCode)
 
                 // document exists
                 DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+                Object temp= document.toObject(Object.class);
+                System.out.println(temp);
                 DocumentReference docRef = querySnapshot.getDocuments().get(0).getReference();
 
                 if (document.exists()) {
 
                     docRef.update("password", password);
+                    return ("Password Changed successfully!");
 
-                    System.out.println("Password Changed successfully!");
                 } else {
-                    System.out.println("user not found!");
+                    return ("user not found!");
                 }
-                return null;
             }
-            return null;
+            return ("user not found!");
         }
-        return null;
+        return ("user not Verified!");
     }
 
     public Object forgetPasswordUserCheck(String email, int phoneNumber) throws ExecutionException, InterruptedException {
@@ -338,11 +352,17 @@ public void authenticatePhoneNumber(String phoneNumber, String verificationCode)
 
     }
 
-    public String uploadVerificationImage(MultipartFile file,String email) throws IOException {
+    public Object uploadVerificationImage(MultipartFile file,String email) throws IOException {
 
 
         // Upload the image to Firebase Firestore
-        String baseUrl = "http://zegeju.com"; // Replace with your base URL
+        if (true){
+             Map<String,Object>respponse=new HashMap<>();
+             respponse.put("download link",imageService.upload(file));
+             respponse.put("status","image Uploaded");
+            return respponse;
+        }
+        String baseUrl = "http://www.zegju.com"; // Replace with your base URL
 
         Map<String, Object> data = new HashMap<>();
         data.put("filename", file.getOriginalFilename());
@@ -355,7 +375,7 @@ public void authenticatePhoneNumber(String phoneNumber, String verificationCode)
         //HashMap<String,Object>questionCatagoryObj= (HashMap<String, Object>) ;
        // String testId= (String) questionCatagoryObj.get("test_id");
 
-        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("questionsCatagory").document(email).set(data);
+        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("verificationImgs").document(email).set(data);
         try {
             return collectionApifuture.get().getUpdateTime().toString();
         } catch (InterruptedException e) {
@@ -365,6 +385,30 @@ public void authenticatePhoneNumber(String phoneNumber, String verificationCode)
         }
 
 
+    }
+    public  Object getVerificationImg(String email){
+        Firestore zgjUfirestore = FirestoreClient.getFirestore();
+        DocumentReference documentReference2 = zgjUfirestore.collection("verificationImgs").document(email);
+        ApiFuture<DocumentSnapshot> future2 = documentReference2.get();
+        MultipartFile img=null;
+        try {
+            DocumentSnapshot documentSnapshot = future2.get();
+            Object document;
+            if (documentSnapshot.exists()) {
+
+                // document exists//
+                img = documentSnapshot.toObject(MultipartFile.class);
+
+
+                //correctNum= (Long) linkedHashMap.get("correct");
+
+            }} catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        //System.out.println(map);
+        return img;
     }
 //
 }

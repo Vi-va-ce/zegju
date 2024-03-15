@@ -30,8 +30,8 @@ public class StudentController {
     public StudentService studentService;
     @Autowired
     public StudentProfileService studentProfileService;
-    @Autowired
-    public TwilioOtpService twilioOtpService;
+//    @Autowired
+//    public TwilioOtpService twilioOtpService;
     @Autowired
     public JwtTokenGenerator jwtTokenGenerator;
     @Autowired
@@ -46,9 +46,8 @@ public class StudentController {
 
 
     @GetMapping("/getUser")
-
     public Object getStudent(@RequestBody Map<String, Object> Data) throws InterruptedException, ExecutionException {
-//        return studentService.getStudent(accessToken);}
+//  returnstudentService.getStudent(accessToken);}
         String acccessToken = (String) Data.get("access_token");
         //if(true)return acccessToken;
         String decrpt = jwtTokenGenerator.decryptToken(acccessToken);
@@ -63,7 +62,7 @@ public class StudentController {
     }
 
     //    @CrossOrigin(origins = "*", methods = {RequestMethod.OPTIONS, RequestMethod.POST})
-    @GetMapping("/logIn")
+    @PostMapping("/logIn")
     public Object logInStudent(@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException {
 
         String email = loginData.get("email");
@@ -112,20 +111,22 @@ public class StudentController {
 
     }
 
-    @PutMapping("/forgetPassword")
+    @PostMapping("/forgetPassword")
     public Object forgetpassword(@RequestBody Map<String, String> loginData) throws InterruptedException, ExecutionException {
-
-        String acccessToken = loginData.get("access_token");
-
-        String decrpt = jwtTokenGenerator.decryptToken(acccessToken);
-        if (decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {
-
-            String emailtoken = jwtTokenGenerator.decryptAccessToken(acccessToken);
-            String password = loginData.get("password");
-            String otp = loginData.get("otp");
-            return studentService.changePassword(emailtoken, password, otp);
+       // String email = loginData.get("email");
+        long phoneNumber= Long.parseLong(loginData.get("phoneNumber"));
+        System.out.println(phoneNumber);
+//        String decrpt = jwtTokenGenerator.decryptToken(acccessToken);
+//        if (decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {
+//
+//            String emailtoken = jwtTokenGenerator.decryptAccessToken(acccessToken);
+//
+        String password = loginData.get("password");
+        String otp = "verified";
+        if (true){
+            return studentService.changePassword(phoneNumber, password, otp);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid access token") + "," + jwtTokenGenerator.extractClaims(acccessToken).getExpiration().getTime();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid access token");
         }
 
 
@@ -144,14 +145,12 @@ public class StudentController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token") + "," + jwtTokenGenerator.extractClaims(acccessToken).getExpiration().getTime();
         }
-
-
     }
 
-    @GetMapping("/VerifyOtp")
-    public String verifyStudent(@RequestParam String otp) {
-        return twilioOtpService.verifyPhoneNumber(otp);
-    }
+    //@GetMapping("/VerifyOtp")
+   // public String verifyStudent(@RequestParam String otp) {
+//        return twilioOtpService.verifyPhoneNumber(otp);
+//    }
 
     @GetMapping("/homepage")
     public Object endPointTesting(@RequestBody String accessToken) {
@@ -177,17 +176,47 @@ public class StudentController {
     }
 
     @PostMapping("/uploadPicture")
-    public Object uploadVerificationImage(HttpServletRequest request) throws IOException {
-        String acccessToken = request.getHeader("Authorization");
-        MultipartFile file = ((MultipartHttpServletRequest) request).getFile("file");
-        String decrpt = jwtTokenGenerator.decryptToken(acccessToken);
-        if (decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {
-            String emailtoken = jwtTokenGenerator.decryptAccessToken(acccessToken);
-            return studentService.uploadVerificationImage(file, emailtoken);
-
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token") + "," + jwtTokenGenerator.extractClaims(acccessToken).getExpiration().getTime();
+    public Object uploadVerificationImage(@RequestParam("photo") MultipartFile file, @RequestHeader String authorizationHeader ) throws IOException {
+//        String acccessToken = request.getHeader("Authorization");
+       // System.out.println(request);
+        //String authorizationHeader=request.getHeader("Authorization");
+        System.out.println(authorizationHeader);
+        System.out.println();
+       String acccessToken = null;
+        String accessToken= authorizationHeader;
+//        System.out.println(acccessToken);
+//        System.out.println();
+//        System.out.println(file);
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
         }
 
+        else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("NO AUTHORIZATION");
+        }
+        acccessToken=accessToken;
+       // MultipartFile file = ((MultipartHttpServletRequest) request).getFile("photo");
+      String decrpt = jwtTokenGenerator.decryptToken(acccessToken);
+      if (decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {
+        String emailtoken = jwtTokenGenerator.decryptAccessToken(acccessToken);
+           // String emailtoken="weldegebrial.gesesse@gmail.com";
+            return studentService.uploadVerificationImage(file, emailtoken);
+
+     } else {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid  token") + "," + jwtTokenGenerator.extractClaims(acccessToken).getExpiration().getTime();
+     }
+
     }
+    @PostMapping("/getPic")
+    public Object getVerificationImg(@RequestBody String email) throws IOException {
+
+        return studentService.getVerificationImg(email);
+    }
+    @PostMapping("/uploadPic")
+    public Object uploadVerificationImg(HttpServletRequest request) throws IOException {
+        String emailtoken="weldegebrial.gesesse@gmail.com";
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile("photo");
+        return studentService.uploadVerificationImage(file, emailtoken);
+    }
+
 }

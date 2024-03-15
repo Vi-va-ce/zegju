@@ -28,6 +28,7 @@ public class HomePageGenerator {
 
 
         public String generateHomePageData(String email){
+            System.out.println(email);
                 HomePageData homePageData = new HomePageData();
                 SatData satData= new SatData();
                 ToeflData toeflData=new ToeflData();

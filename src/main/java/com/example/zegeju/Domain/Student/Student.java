@@ -13,7 +13,7 @@ public class Student {
     private String lastName;
     private String email;
     private String password;
-    private int phoneNumber;
+    private long phoneNumber;
     private int otp;
     private Date otpExpiry;
     private boolean verified;

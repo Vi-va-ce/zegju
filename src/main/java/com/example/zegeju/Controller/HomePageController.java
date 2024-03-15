@@ -35,9 +35,10 @@ public class HomePageController {
     public Object getData(HttpServletRequest request) throws ExecutionException, InterruptedException, IOException {
 
 //        System.out.println(authorizationHeader);
-        System.out.println(request);
+       // System.out.println(request);
+       // System.out.println();
         String authorizationHeader = request.getHeader("Authorization");
-
+       // System.out.println(authorizationHeader);
         // Extract the token from the Authorization header
         String acccessToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -49,6 +50,7 @@ public class HomePageController {
         }
         System.out.println(acccessToken);
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
+        System.out.println(decrpt);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
 
         String userInfo=jwtTokenGenerator.decryptAccessToken(acccessToken);
@@ -104,6 +106,7 @@ public class HomePageController {
     @PostMapping("/refresh-token")
     public Object refreshToken(@RequestBody Map<String,Object>  loginData) throws IOException {
         String refreshToken = (String) loginData.get("refresh_token");
+       // System.out.println(refreshToken);
 //        if (true) System.out.println(loginData);
 //        try {
 //            Pattern pattern = Pattern.compile("(?<=accessToken=)([^,]+)");
