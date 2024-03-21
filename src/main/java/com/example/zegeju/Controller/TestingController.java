@@ -4,13 +4,11 @@ import com.example.zegeju.Domain.PracticeTests.Response;
 import com.example.zegeju.Service.PerformanceService;
 import com.example.zegeju.Service.PracticeTestService;
 import com.example.zegeju.Service.TestService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -46,7 +44,6 @@ public class TestingController {
 //        String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
 //        if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
 //            String emailtoken=jwtTokenGenerator.decryptAccessToken(acccessToken);
-
         String emailtoken = loginData.get("emailToken");
         return performanceService.getDashBoardData(emailtoken);
 
@@ -83,5 +80,48 @@ public class TestingController {
 
 
     }
+    @PostMapping("/userResponses")
+    public  Object userResponse( @RequestHeader("Authorization") String authorizationHeader,@RequestBody HashMap<String,Object> userResponse) throws IOException, ExecutionException, InterruptedException {
+
+
+        System.out.println(authorizationHeader);
+
+            return performanceService.generateResult(userResponse);
+
+
+    }
+//    @Component
+//    public class MapDeserializer extends JsonDeserializer<Map<String,Object>> {
+//
+//        @Override
+//        public Map<String,Object> deserialize(JsonParser p, DeserializationContext ctxt)
+//                throws IOException {
+//
+//            ObjectMapper mapper = new ObjectMapper();
+//            Map<String,Object> map = mapper.readValue(p, Map.class);
+//
+//            return map;
+//        }
+//
+//    }
+//
+//    // Configuration
+//    @Configuration
+//    public class DeserializerConfig {
+//
+//        @Bean
+//        public MapDeserializer deserializer() {
+//            return new MapDeserializer();
+//        }
+//
+//        @Bean
+//        public ObjectMapper objectMapper() {
+//            ObjectMapper mapper = new ObjectMapper();
+//            mapper.registerModule(new SimpleModule()
+//                    .addDeserializer(Map.class, deserializer()));
+//            return mapper;
+//        }
+//
+//    }
 
 }

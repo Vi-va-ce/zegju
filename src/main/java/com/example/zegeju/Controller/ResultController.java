@@ -28,9 +28,17 @@ public class ResultController {
     @Autowired
     public JwtTokenGenerator jwtTokenGenerator;
     @GetMapping("/getTest")
-    public Object getTest(@RequestBody Map<String,Object> Data ) throws ExecutionException, InterruptedException, IOException {
+    public Object getTest(@RequestHeader("authorization") String authorizationHeader,@RequestBody Map<String,Object> Data ) throws ExecutionException, InterruptedException, IOException {
 
-        String acccessToken= (String) Data.get("access_token");
+       // String acccessToken= (String) Data.get("access_token");
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
         String test_id= (String) Data.get("test_id");
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
@@ -48,9 +56,17 @@ public class ResultController {
 
     }
     @PostMapping("/registertestCatagory")
-    public Object putTest(@RequestBody Map<String,Object> Data) {
-        String acccessToken= (String) Data.get("accessToken");
+    public Object putTest(@RequestHeader("authorization") String authorizationHeader,@RequestBody Map<String,Object> Data) {
+        //String acccessToken= (String) Data.get("accessToken");
         Object testCatagory= Data.get("testCatagory");
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
 
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){

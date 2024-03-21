@@ -94,8 +94,17 @@ public class StudentController {
     //////i am gonna
 
     @PostMapping("/forgetPasswordUserCheck")
-    public Object forgetPasswordUserCheck(@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException {
-        String acccessToken = loginData.get("access_token");
+    public Object forgetPasswordUserCheck(@RequestHeader("authorization") String authorizationHeader
+,@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException {
+        //String acccessToken = loginData.get("access_token");
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
 
         String decrpt = jwtTokenGenerator.decryptToken(acccessToken);
         if (decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {
@@ -136,8 +145,16 @@ public class StudentController {
 
 
     @PutMapping("/deleteUser")
-    public Object deleteStudent(@RequestBody Map<String, String> loginData) throws InterruptedException, ExecutionException {
-        String acccessToken = loginData.get("access_token");
+    public Object deleteStudent(@RequestHeader("authorization") String authorizationHeader,@RequestBody Map<String, String> loginData) throws InterruptedException, ExecutionException {
+        //String acccessToken = loginData.get("access_token");
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
         String decrpt = jwtTokenGenerator.decryptToken(acccessToken);
         if (decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {
             String emailToken = jwtTokenGenerator.decryptAccessToken(acccessToken);
@@ -159,10 +176,18 @@ public class StudentController {
 
     @PostMapping("/studentProfile")
 
-    public Object getStudentProfile(@RequestBody Map<String, String> loginData) throws InterruptedException, ExecutionException {
+    public Object getStudentProfile(@RequestHeader("authorization") String authorizationHeader,@RequestBody Map<String, String> loginData) throws InterruptedException, ExecutionException {
         System.out.println(loginData);
         // if (true){return loginData;}
-        String acccessToken = loginData.get("access_token");
+       // String acccessToken = loginData.get("access_token");
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
         String userId = new String();
         String decrpt = jwtTokenGenerator.decryptToken(acccessToken);
         if (decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {

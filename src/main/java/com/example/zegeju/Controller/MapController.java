@@ -1,7 +1,10 @@
 package com.example.zegeju.Controller;
 
+import com.example.zegeju.Service.JwtTokenGenerator;
 import com.example.zegeju.Service.MapService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -12,14 +15,42 @@ public class MapController {
     @Autowired
     private MapService mapService;
 
-    @GetMapping("/getMapData")
+    @Autowired
+    private JwtTokenGenerator jwtTokenGenerator;
+
+    @GetMapping("/getMappData")
     // @RequestBody Map<String,Object> data
-    public Object putTest() {
+    public Object putTestt() {
         //user email and statusId
 
         String userId="welde.gesesse@gmail.com";
         //String statusId= (String) data.get("status");
 
         return mapService.getMapData(userId);
+    }
+    @GetMapping("/getMapData")
+    // @RequestBody Map<String,Object> data
+    public Object putTest(@RequestHeader("authorization") String authorizationHeader) {
+        //user email and statusId
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
+        String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
+        if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
+            String email=jwtTokenGenerator.decryptAccessToken(acccessToken);
+
+            String userId=email;
+            return mapService.getMapData(userId);
+        //String statusId= (String) data.get("status");
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token")+","+jwtTokenGenerator.extractClaims(acccessToken).getExpiration().getTime();
+        }
+
     }
 }

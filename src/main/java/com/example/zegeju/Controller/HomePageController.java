@@ -38,7 +38,7 @@ public class HomePageController {
        // System.out.println(request);
        // System.out.println();
         String authorizationHeader = request.getHeader("Authorization");
-       // System.out.println(authorizationHeader);
+        System.out.println(authorizationHeader);
         // Extract the token from the Authorization header
         String acccessToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -107,35 +107,6 @@ public class HomePageController {
     public Object refreshToken(@RequestBody Map<String,Object>  loginData) throws IOException {
         String refreshToken = (String) loginData.get("refresh_token");
        // System.out.println(refreshToken);
-//        if (true) System.out.println(loginData);
-//        try {
-//            Pattern pattern = Pattern.compile("(?<=accessToken=)([^,]+)");
-//            Matcher matcher = pattern.matcher(loginData);
-//
-//            if (matcher.find()) {
-//                String accessToken = matcher.group().trim();
-//                System.out.println("Access Token: " + accessToken);
-//            }
-//
-//            pattern = Pattern.compile("(?<=refreshToken=)([^,}]+)");
-//            matcher = pattern.matcher(loginData);
-//
-//            if (matcher.find()) {
-//                 refreshToken = matcher.group().trim();
-//                System.out.println("Refresh Token: " + refreshToken);
-//            }
-//
-//
-//            // Parse the data as a JSON objec
-//        } catch (Exception e) {
-//            e.printStackTrace();
-////            System.out.println(loginData);
-//        }
-
-//        String cleanedData = loginData.replaceAll("[{}]", "");
-//
-//// Split the cleaned data into key-value pairs
-
 //        }
 //        String refreshToken = loginData.get("refreshToken");
         String decrpt=jwtTokenGenerator.decryptToken(refreshToken);

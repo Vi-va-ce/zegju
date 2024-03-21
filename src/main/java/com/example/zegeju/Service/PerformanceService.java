@@ -784,8 +784,8 @@ public class PerformanceService {
                 response.put("section-scores",section_Scores);
 
 
-                if (true) generatePracticeTestDashboardData(dashboardData);
-                return generateSectionTestScore(section_Scores,userid,scoring);
+                //QW34if (true) generatePracticeTestDashboardData(dashboardData);
+                return generatePracticeTestDashboardData(dashboardData);
 
 
             }

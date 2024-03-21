@@ -157,8 +157,15 @@ public class TestController {
     }
 
     @GetMapping("/diagnosticTest")
-    public Object getDiagnosingTest(@RequestBody Map<String, String> loginData ) throws ExecutionException, InterruptedException, IOException {
-        String acccessToken = loginData.get("access_token");
+    public Object getDiagnosingTest(@RequestHeader("authorization") String authorizationHeader) throws ExecutionException, InterruptedException, IOException {
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
         //        String test_id=loginData.get("test_id");
         String test_id="diagnostic_testOne";
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
@@ -210,11 +217,21 @@ public class TestController {
     }/// this was for testing puposes
 
     @PostMapping("/userResponse")
-    public  Object userResponse( @RequestBody HashMap<String,Object> userResponse) throws IOException, ExecutionException, InterruptedException {
+    public  Object userResponse( @RequestHeader("authorization") String authorizationHeader,@RequestBody HashMap<String,Object> userResponse) throws IOException, ExecutionException, InterruptedException {
 
+        System.out.println(userResponse);
+        // Extract the token from the Authorization headers
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
         ObjectMapper objectMapper = new ObjectMapper();
 
-        String acccessToken= (String) userResponse.get("access_token");
+        //String acccessToken= (String) userResponse.get("access_token");
 
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {
@@ -264,9 +281,17 @@ public class TestController {
 //    }
     @GetMapping("/dashBoardData")
     //@RequestBody String accessToken,@RequestParam String use_id
-    public Object getDashBoardData(@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException, IOException {
+    public Object getDashBoardData(@RequestHeader("authorization") String authorizationHeader) throws ExecutionException, InterruptedException, IOException {
         //if (true)return performanceService.getDashBoardData("welde.gesesse@gmail.com");
-        String acccessToken=loginData.get("access_token");
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
+       // String acccessToken=loginData.get("access_token");
 
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {
@@ -288,8 +313,16 @@ public class TestController {
     }
     @GetMapping("/leaderBoard")
     //@RequestBody String accessToken
-    public  Object leaderBoard(@RequestBody Map<String, String> loginData){
-        String acccessToken=loginData.get("access_token");
+    public  Object leaderBoard(@RequestHeader("authorization") String authorizationHeader){
+//        String acccessToken=loginData.get("access_token");
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
 
@@ -306,11 +339,19 @@ public class TestController {
     }
 
     @PostMapping("/practiceTestResult")
-    public Object realTimeTestResult(@RequestBody HashMap<String,Object> userResponse) throws ExecutionException, InterruptedException {
+    public Object realTimeTestResult(@RequestHeader("authorization") String authorizationHeader,@RequestBody HashMap<String,Object> userResponse) throws ExecutionException, InterruptedException {
 //    HashMap<String,String>data=new HashMap<>();
 
 //      System.out.println(userResponse);
-        String acccessToken= (String) userResponse.get("access_token");
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
+        //String acccessToken= (String) userResponse.get("access_token");
 
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
@@ -321,8 +362,15 @@ public class TestController {
     }
     @GetMapping("/practiceTestResponse")
     //@RequestBody String requestBody
-    public Object generateRealTimeResult(@RequestBody  HashMap<String,Object>userResponse) throws ExecutionException, InterruptedException {
-        String acccessToken= (String) userResponse.get("access_token");
+    public Object generateRealTimeResult(@RequestHeader("authorization") String authorizationHeader,@RequestBody  HashMap<String,Object>userResponse) throws ExecutionException, InterruptedException {
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
 
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){

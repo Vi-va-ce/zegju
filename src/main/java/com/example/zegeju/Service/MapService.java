@@ -102,6 +102,34 @@ public class MapService {
         return map;
     }
 
+    public Object update (String userId, String status){
+        Firestore zgjUfirestore = FirestoreClient.getFirestore();
+        DocumentReference documentReference2 = zgjUfirestore.collection("mapData").document(userId);
+        ApiFuture<DocumentSnapshot> future2 = documentReference2.get();
+        long correctNum= 0;
+        HashMap<String,Object> map=new HashMap<>();
+        try {
+            DocumentSnapshot documentSnapshot = future2.get();
+            Object document;
+            if (documentSnapshot.exists()) {
+
+                // document exists//
+                document = documentSnapshot.toObject(Object.class);
+
+                HashMap<String, Object> linkedHashMap = new HashMap<>((Map) document);
+                map=linkedHashMap;
+                //correctNum= (Long) linkedHashMap.get("correct");
+
+            }} catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        //System.out.println(map);
+        return map;
+    }
+
+
 
     //public Object getUserStatus(String userId) {
 
