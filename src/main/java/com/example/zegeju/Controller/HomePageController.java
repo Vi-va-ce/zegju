@@ -38,7 +38,7 @@ public class HomePageController {
        // System.out.println(request);
        // System.out.println();
         String authorizationHeader = request.getHeader("Authorization");
-        System.out.println(authorizationHeader);
+       // System.out.println(request);
         // Extract the token from the Authorization header
         String acccessToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -48,9 +48,9 @@ public class HomePageController {
        else {
             System.out.println("NO AUTHORIZATION");
         }
-        System.out.println(acccessToken);
+       // System.out.println(acccessToken);
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
-        System.out.println(decrpt);
+       // System.out.println(decrpt);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
 
         String userInfo=jwtTokenGenerator.decryptAccessToken(acccessToken);

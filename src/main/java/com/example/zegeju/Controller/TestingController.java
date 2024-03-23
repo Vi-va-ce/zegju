@@ -5,6 +5,7 @@ import com.example.zegeju.Service.PerformanceService;
 import com.example.zegeju.Service.PracticeTestService;
 import com.example.zegeju.Service.TestService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,12 +82,13 @@ public class TestingController {
 
     }
     @PostMapping("/userResponses")
-    public  Object userResponse( @RequestHeader("Authorization") String authorizationHeader,@RequestBody HashMap<String,Object> userResponse) throws IOException, ExecutionException, InterruptedException {
+    public  Object userResponse(HttpServletRequest request,@RequestBody HashMap<String,Object> userResponse) throws IOException, ExecutionException, InterruptedException {
 
-
+        String authorizationHeader = request.getHeader("Authorization");
         System.out.println(authorizationHeader);
-
-            return performanceService.generateResult(userResponse);
+        System.out.println(userResponse);
+        return null;
+            //return performanceService.generateResult(userResponse);
 
 
     }

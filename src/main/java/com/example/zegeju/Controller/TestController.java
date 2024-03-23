@@ -217,9 +217,10 @@ public class TestController {
     }/// this was for testing puposes
 
     @PostMapping("/userResponse")
-    public  Object userResponse( @RequestHeader("authorization") String authorizationHeader,@RequestBody HashMap<String,Object> userResponse) throws IOException, ExecutionException, InterruptedException {
+    public  Object userResponse(HttpServletRequest request, @RequestBody HashMap<String,Object> userResponse) throws IOException, ExecutionException, InterruptedException {
+       String authorizationHeader = request.getHeader("Authorization");
 
-        System.out.println(userResponse);
+        System.out.println(authorizationHeader);
         // Extract the token from the Authorization headers
         String acccessToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
