@@ -239,13 +239,36 @@ public class TestController {
 
             String emailtoken = jwtTokenGenerator.decryptAccessToken(acccessToken);
 
-            return performanceService.generateResult(userResponse);
+            return performanceService.generateResult(emailtoken,userResponse);
         }
 
         else {
            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid access token");
        }
 
+    }
+    @PostMapping("/TestResult")
+    public  Object getSectionTestResult(HttpServletRequest request) throws IOException, ExecutionException, InterruptedException {
+        String authorizationHeader = request.getHeader("Authorization");
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
+        String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
+        if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {
+
+            String emailtoken = jwtTokenGenerator.decryptAccessToken(acccessToken);
+
+            return performanceService.getSectionTestScore(emailtoken);
+        }
+
+        else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid access token");
+        }
     }
 //    @Component
 //    public class MapDeserializer extends JsonDeserializer<Map<String,Object>> {
@@ -280,10 +303,12 @@ public class TestController {
 //        }
 //
 //    }
+
     @GetMapping("/dashBoardData")
     //@RequestBody String accessToken,@RequestParam String use_id
-    public Object getDashBoardData(@RequestHeader("authorization") String authorizationHeader) throws ExecutionException, InterruptedException, IOException {
+    public Object getDashBoardData(HttpServletRequest request ) throws ExecutionException, InterruptedException, IOException {
         //if (true)return performanceService.getDashBoardData("welde.gesesse@gmail.com");
+        String authorizationHeader = request.getHeader("Authorization");
         String acccessToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
@@ -314,7 +339,8 @@ public class TestController {
     }
     @GetMapping("/leaderBoard")
     //@RequestBody String accessToken
-    public  Object leaderBoard(@RequestHeader("authorization") String authorizationHeader){
+    public  Object leaderBoard(HttpServletRequest request){
+        String authorizationHeader = request.getHeader("Authorization");
 //        String acccessToken=loginData.get("access_token");
         String acccessToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -340,10 +366,11 @@ public class TestController {
     }
 
     @PostMapping("/practiceTestResult")
-    public Object realTimeTestResult(@RequestHeader("authorization") String authorizationHeader,@RequestBody HashMap<String,Object> userResponse) throws ExecutionException, InterruptedException {
+    public Object realTimeTestResult(HttpServletRequest request ,@RequestBody HashMap<String,Object> userResponse) throws ExecutionException, InterruptedException {
 //    HashMap<String,String>data=new HashMap<>();
 
 //      System.out.println(userResponse);
+        String authorizationHeader = request.getHeader("Authorization");
         String acccessToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
@@ -363,7 +390,8 @@ public class TestController {
     }
     @GetMapping("/practiceTestResponse")
     //@RequestBody String requestBody
-    public Object generateRealTimeResult(@RequestHeader("authorization") String authorizationHeader,@RequestBody  HashMap<String,Object>userResponse) throws ExecutionException, InterruptedException {
+    public Object generateRealTimeResult(HttpServletRequest request,@RequestBody  HashMap<String,Object>userResponse) throws ExecutionException, InterruptedException {
+        String authorizationHeader = request.getHeader("Authorization");
         String acccessToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix

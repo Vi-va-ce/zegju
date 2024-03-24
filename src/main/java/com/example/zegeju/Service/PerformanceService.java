@@ -20,7 +20,7 @@ public class PerformanceService {
 
     @Autowired
     private SectionsPerformanceService sectionsPerformanceService;
-    public Object generateResult(HashMap<String,Object> userResponses) throws ExecutionException, InterruptedException {
+    public Object generateResult(String email_userId,HashMap<String,Object> userResponses) throws ExecutionException, InterruptedException {
         /* Generate  dashboard DATA*/
 //        saveDashboardData(userResponse);
 
@@ -32,6 +32,7 @@ public class PerformanceService {
         HashMap<String,Object> userResponse= (HashMap<String, Object>) sectionsPerformanceService.generateResult(userResponses);
         //System.out.println(userResponse);
         HashMap<String,Object>responseData= userResponse;
+        HashMap<String,Object>response=new HashMap<>();
 
         Firestore zgjUfirestore = FirestoreClient.getFirestore();
         DocumentReference documentReference = zgjUfirestore.collection("answer").document((String) responseData.get("test_id"));
@@ -365,7 +366,7 @@ public class PerformanceService {
             dashboardData.put(Reading_and_Writing_subscores,readingAndWriting);
             dashboardData.put(Math_subscores,Math_subscore);
             dashboardData.put(cross_test,crossTest);
-            dashboardData.put("use_id",userResponse.get("use_id"));
+            dashboardData.put("use_id",email_userId);
 
 
             //// The test row result
@@ -376,10 +377,10 @@ public class PerformanceService {
             HashMap<String,Object> testData = new HashMap<>();
 
             /////user id for the test result generation
-            String userid= (String) userResponse.get("use_id");
+            String userid= email_userId;
             testData.put("sectionScores",section_Scores);
 
-            HashMap<String,Object>response= new HashMap<>();
+            HashMap<String,Object>responseText= new HashMap<>();
             HashMap<String,Object>total_wrong_answer=new HashMap<>();
 
             total_wrong_answer.put("score",math_calculator_score+math_no_calculator_score+reading_score+writing_score);
@@ -393,8 +394,9 @@ public class PerformanceService {
 
 
             if (true) generateDashboardData(dashboardData);
-            generateSectionTestScore(section_Scores,userid,scoring);
-            return "Response Submitted";
+            generateSectionTestScore(section_Scores,email_userId,scoring);
+            responseText.put("Status","Response Submitted");
+            return responseText;
 
 
         }
@@ -412,7 +414,7 @@ public class PerformanceService {
         ///
 
     }
-    public Object generateDashboardDataForPracticeTestResult(HashMap<String,Object> userResponse) throws ExecutionException, InterruptedException {
+    public Object generateDashboardDataForPracticeTestResult(HashMap<String,Object> userResponse, String email_USER_ID) throws ExecutionException, InterruptedException {
         /* Generate  dashboard DATA*/
 //        saveDashboardData(userResponse);
 
@@ -758,7 +760,7 @@ public class PerformanceService {
                 dashboardData.put(Reading_and_Writing_subscores,readingAndWriting);
                 dashboardData.put(Math_subscores,Math_subscore);
                 dashboardData.put(cross_test,crossTest);
-                dashboardData.put("use_id",userResponse.get("use_id"));
+                dashboardData.put("use_id",email_USER_ID);
 
 
                 //// The test row result
@@ -769,7 +771,7 @@ public class PerformanceService {
                 HashMap<String,Object> testData = new HashMap<>();
 
                 /////user id for the test result generation
-                String userid= (String) userResponse.get("use_id");
+               // String userid= (String) userResponse.get("use_id");
                 testData.put("sectionScores",section_Scores);
 
                 HashMap<String,Object>response= new HashMap<>();
@@ -781,7 +783,7 @@ public class PerformanceService {
 
                 total_Scores.put("mainSections",mainSections);
 
-                response.put("use_id",userResponse.get("use_id"));
+                response.put("use_id",email_USER_ID);
                 response.put("section-scores",section_Scores);
 
 
@@ -926,6 +928,28 @@ public class PerformanceService {
         registerTestResult(testResultoutData,userid);
         //return testResultoutData;
     }
+    public Object getSectionTestScore(String use_id) throws ExecutionException, InterruptedException, IOException {
+        Firestore zgjUfirestore = FirestoreClient.getFirestore();
+        DocumentReference documentReference = zgjUfirestore.collection("testResultData").document(use_id);
+        ApiFuture<DocumentSnapshot> future = documentReference.get();
+        DocumentSnapshot documentSnapshot = future.get();
+
+
+        Object document;
+        if (documentSnapshot.exists()) {
+
+            // document exists
+
+            document = documentSnapshot.toObject(Object.class);
+            HashMap<String, Object> hashMapData = (HashMap<String, Object>) document;
+
+            return hashMapData;
+
+
+        }
+
+        return "no dashboard data is found";
+    }
 
     private String generateRawDiagnosticScoreForSections(long l, long l1, String userId) {
         String testId="diagnostic_testOne";
@@ -959,7 +983,7 @@ public class PerformanceService {
         Firestore zgjUfirestore = FirestoreClient.getFirestore();
         String user_Id= userId;
 
-        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("testResultData").document("welde.gesesse@gmail.com").set(questionCatagory);
+        ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("testResultData").document(user_Id).set(questionCatagory);
         try {
             return collectionApifuture.get().getUpdateTime().toString();
         } catch (InterruptedException e) {
@@ -1915,7 +1939,7 @@ public Object generatePracticeTestDashboardData(HashMap<String, Object> dashboar
         dashboardDisplayData.put(Math_subscores,Math_subscore);
         dashboardDisplayData.put(cross_test,crossTest);
 //        System.out.println(dashboardDisplayData);
-        return registerDashboardData(dashboardDisplayData,"welde.gesesse@gmail.com");
+        return registerDashboardData(dashboardDisplayData,userId);
 
     }
 

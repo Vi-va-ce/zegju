@@ -46,9 +46,17 @@ public class StudentController {
 
 
     @GetMapping("/getUser")
-    public Object getStudent(@RequestBody Map<String, Object> Data) throws InterruptedException, ExecutionException {
+    public Object getStudent(HttpServletRequest request ,@RequestBody Map<String, Object> Data) throws InterruptedException, ExecutionException {
 //  returnstudentService.getStudent(accessToken);}
-        String acccessToken = (String) Data.get("access_token");
+        String authorizationHeader = request.getHeader("Authorization");
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
         //if(true)return acccessToken;
         String decrpt = jwtTokenGenerator.decryptToken(acccessToken);
 
@@ -71,11 +79,20 @@ public class StudentController {
     }
 
     @PutMapping("/changePassword")
-    public Object updateStudentPassword(@RequestBody Map<String, String> loginData) throws InterruptedException, ExecutionException {
+    public Object updateStudentPassword(HttpServletRequest request,@RequestBody Map<String, String> loginData) throws InterruptedException, ExecutionException {
 
         System.out.println(loginData);
         // if (true){return loginData;}
-        String acccessToken = loginData.get("access_token");
+        //String acccessToken = loginData.get("access_token");
+        String authorizationHeader = request.getHeader("Authorization");
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
 
         String decrpt = jwtTokenGenerator.decryptToken(acccessToken);
         if (decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))) {
@@ -145,9 +162,10 @@ public class StudentController {
 
 
     @PutMapping("/deleteUser")
-    public Object deleteStudent(@RequestHeader("authorization") String authorizationHeader,@RequestBody Map<String, String> loginData) throws InterruptedException, ExecutionException {
+    public Object deleteStudent(HttpServletRequest request,@RequestBody Map<String, String> loginData) throws InterruptedException, ExecutionException {
         //String acccessToken = loginData.get("access_token");
         String acccessToken = null;
+        String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
         }
@@ -176,10 +194,11 @@ public class StudentController {
 
     @PostMapping("/studentProfile")
 
-    public Object getStudentProfile(@RequestHeader("authorization") String authorizationHeader,@RequestBody Map<String, String> loginData) throws InterruptedException, ExecutionException {
+    public Object getStudentProfile(HttpServletRequest request,@RequestBody Map<String, String> loginData) throws InterruptedException, ExecutionException {
         System.out.println(loginData);
         // if (true){return loginData;}
        // String acccessToken = loginData.get("access_token");
+        String authorizationHeader = request.getHeader("Authorization");
         String acccessToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
@@ -237,11 +256,11 @@ public class StudentController {
 
         return studentService.getVerificationImg(email);
     }
-    @PostMapping("/uploadPic")
-    public Object uploadVerificationImg(HttpServletRequest request) throws IOException {
-        String emailtoken="weldegebrial.gesesse@gmail.com";
-        MultipartFile file = ((MultipartHttpServletRequest) request).getFile("photo");
-        return studentService.uploadVerificationImage(file, emailtoken);
-    }
+//    @PostMapping("/uploadPic")
+//    public Object uploadVerificationImg(HttpServletRequest request) throws IOException {
+//        String emailtoken="weldegebrial.gesesse@gmail.com";
+//        MultipartFile file = ((MultipartHttpServletRequest) request).getFile("photo");
+//        return studentService.uploadVerificationImage(file, emailtoken);
+//    }
 
 }

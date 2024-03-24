@@ -2,6 +2,7 @@ package com.example.zegeju.Controller;
 
 import com.example.zegeju.Service.JwtTokenGenerator;
 import com.example.zegeju.Service.MapService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +29,13 @@ public class MapController {
 
         return mapService.getMapData(userId);
     }
+
+
     @GetMapping("/getMapData")
     // @RequestBody Map<String,Object> data
-    public Object putTest(@RequestHeader("authorization") String authorizationHeader) {
+    public Object putTest(HttpServletRequest request) {
         //user email and statusId
+        String authorizationHeader = request.getHeader("Authorization");
         String acccessToken = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
