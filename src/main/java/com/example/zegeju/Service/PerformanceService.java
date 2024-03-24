@@ -808,7 +808,7 @@ public class PerformanceService {
         if (score.equals("0")) return "1";
         return score;
     }
-    private Object generateSectionTestScore(HashMap<String, Long> testData, String userId, HashMap<String, Object> scoring) {
+    private void generateSectionTestScore(HashMap<String, Long> testData, String userId, HashMap<String, Object> scoring) {
 
         long writingScore= testData.get("Writing_Section_Score");
         long mathCalcScore= testData.get("Math_Calculator_Score");
@@ -924,7 +924,7 @@ public class PerformanceService {
         //registerLeaderBoard(totalscore,userId);
 
         registerTestResult(testResultoutData,userid);
-        return testResultoutData;
+        //return testResultoutData;
     }
 
     private String generateRawDiagnosticScoreForSections(long l, long l1, String userId) {
