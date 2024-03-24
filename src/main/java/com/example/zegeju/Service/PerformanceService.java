@@ -393,7 +393,8 @@ public class PerformanceService {
 
 
             if (true) generateDashboardData(dashboardData);
-            return generateSectionTestScore(section_Scores,userid,scoring);
+            generateSectionTestScore(section_Scores,userid,scoring);
+            return "Response Submitted";
 
 
         }
