@@ -312,7 +312,7 @@ public void authenticatePhoneNumber(String phoneNumber, String verificationCode)
                 // document exists
                 DocumentSnapshot document = querySnapshot.getDocuments().get(0);
                 Object temp= document.toObject(Object.class);
-                System.out.println(temp);
+                //System.out.println(temp);
                 DocumentReference docRef = querySnapshot.getDocuments().get(0).getReference();
 
                 if (document.exists()) {

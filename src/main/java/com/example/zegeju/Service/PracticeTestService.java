@@ -320,7 +320,7 @@ public class PracticeTestService {
 
             return responses;
         }
-        HashMap<String,Object> generatedPracticeTestDashboard=(HashMap<String, Object>) performanceService.generateDashboardDataForPracticeTestResult(responses,userId);
+        HashMap<String,Object> generatedPracticeTestDashboard=(HashMap<String, Object>) performanceService.generatePracticeTestResult(userId,responses);
         if(getPracticeTestAccumulatedResponse(userId)!=null)
         {
                     HashMap<String,Object>accumulatedResponse= (HashMap<String, Object>) getPracticeTestAccumulatedResponse(userId);

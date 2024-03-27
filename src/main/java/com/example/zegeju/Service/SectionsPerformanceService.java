@@ -26,8 +26,8 @@ public class SectionsPerformanceService {
         if (!testid.contains("test")){
             testid=keyList.get(1);
         }
-        System.out.println("am here");
-        System.out.println(testid);
+//        System.out.println("am here");
+//        System.out.println(testid);
 
         HashMap<String,Object>userResponseSection= (HashMap<String, Object>) userResponse.get(testid);
 
@@ -260,6 +260,28 @@ public class SectionsPerformanceService {
 
 
     return null;
+    }
+    public String returnSectionId(HashMap<String,Object> userResponse){
+        HashMap<String, Object> hashMapData = (HashMap<String, Object>) userResponse;
+        //if (true) return (userResponse);
+        Set<String> keys= hashMapData.keySet();
+        List<String> keyList = new ArrayList<>(keys);
+
+
+        String testid= keyList.get(0);//test_id
+        if (!testid.contains("test")){
+            testid=keyList.get(1);
+        }
+//        System.out.println("am here");
+//        System.out.println(testid);
+
+        HashMap<String,Object>userResponseSection= (HashMap<String, Object>) userResponse.get(testid);
+
+        Set<String>keys2=userResponseSection.keySet();
+        List<String> keyList2 = new ArrayList<>(keys2);
+//        System.out.println(userResponseSection);
+        String sectionId= keyList2.get(0);//section id
+        return sectionId;
     }
 
 }
