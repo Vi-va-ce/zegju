@@ -142,11 +142,11 @@ public class MapService {
             //System.out.println(temp);
             DocumentReference docRef = querySnapshot.getDocuments().get(0).getReference();
             String sectionIdtoBeUpdated= new String();
-            if (sectionId.equals("mathcalculator")||sectionId.equals("MathCalculator")||sectionId.equals("Math Calculator")||sectionId.equals("MATH calculator"))
+            if (sectionId.equals("Math_Sectionmathwithcalculator")||sectionId.equals("MathCalculator")||sectionId.equals("Math Calculator")||sectionId.equals("MATH calculator"))
             {
                 sectionIdtoBeUpdated=MATH_NO_CALC;
             }
-            else if (sectionId.contains("NoCalculator")||sectionId.contains("noCalculator")||sectionId.contains("nocalculator"))
+            else if (sectionId.equals("Math_Section")||sectionId.contains("noCalculator")||sectionId.contains("nocalculator"))
             {
                 sectionIdtoBeUpdated=WRITING_LANG;
             }
