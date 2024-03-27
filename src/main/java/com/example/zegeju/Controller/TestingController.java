@@ -82,12 +82,14 @@ public class TestingController {
 
     }
     @PostMapping("/userResponses")
-    public  Object userResponse(HttpServletRequest request,@RequestBody HashMap<String,Object> userResponse) throws IOException, ExecutionException, InterruptedException {
+    public  Object userResponse(@RequestBody HashMap<String,Object> userResponse) throws IOException, ExecutionException, InterruptedException {
 
-        String authorizationHeader = request.getHeader("Authorization");
-        System.out.println(authorizationHeader);
+       // String authorizationHeader = request.getHeader("Authorization");
+       // System.out.println(authorizationHeader);
         System.out.println(userResponse);
-        return null;
+        String emailtoken="es@gmail.com";
+        return performanceService.generateResult(emailtoken,userResponse);
+
             //return performanceService.generateResult(userResponse);
 
 

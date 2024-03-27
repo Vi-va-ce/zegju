@@ -133,6 +133,7 @@ public class MapService {
         QuerySnapshot querySnapshot = future.get();
         Student student2;
         System.out.println(sectionId);
+
         HashMap<String,String>Response=new HashMap<>();
         if (!querySnapshot.isEmpty()) {
 
@@ -142,7 +143,7 @@ public class MapService {
             //System.out.println(temp);
             DocumentReference docRef = querySnapshot.getDocuments().get(0).getReference();
             String sectionIdtoBeUpdated= new String();
-            if (sectionId.equals("Math_Sectionmathwithcalculator")||sectionId.equals("MathCalculator")||sectionId.equals("Math Calculator")||sectionId.equals("MATH calculator"))
+            if (sectionId.equals("Math_Sectionmathwithcalculator")||sectionId.contains("Math_Sectionmathwithcalculator"))
             {
                 sectionIdtoBeUpdated=MATH_NO_CALC;
             }

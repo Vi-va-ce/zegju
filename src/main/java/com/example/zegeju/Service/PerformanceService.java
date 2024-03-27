@@ -33,6 +33,10 @@ public class PerformanceService {
         ////
         //System.out.println(userResponses);
        // if (true)return (sectionsPerformanceService.generateResult(userResponses));
+
+
+
+//        HashMap<String,Object>userResponses=checkOrChangeData(userResponses1);
         HashMap<String,Object> userResponse= (HashMap<String, Object>) sectionsPerformanceService.generateResult(userResponses);
         //System.out.println(userResponse);
         updateMapData(email_userId,userResponse,userResponses);
@@ -418,6 +422,29 @@ public class PerformanceService {
 
         ///
 
+    }
+    public HashMap<String,Object> checkOrChangeData(HashMap<String,Object>userResponses){
+        Set<String> keys= userResponses.keySet();
+        List<String> keyList = new ArrayList<>(keys);
+
+
+
+        String testid= keyList.get(0);//test_id
+        if (!testid.contains("test")){
+            testid=keyList.get(1);
+        }
+//        System.out.println("am here");
+//        System.out.println(testid);
+
+        HashMap<String,Object>userResponseSection= (HashMap<String, Object>)userResponses.get(testid);
+        Set<String>keys2=userResponseSection.keySet();
+        List<String> keyList2 = new ArrayList<>(keys2);
+//        System.out.println(userResponseSection);
+        String sectionId= keyList2.get(0);//section id
+        if (sectionId==testid){
+            return  userResponseSection;
+        }
+        return userResponses;
     }
 
     private void updateMapData(String email_userId, HashMap<String, Object> userResponse,HashMap<String, Object> SectionIdProvidingResponse ) throws ExecutionException, InterruptedException {
