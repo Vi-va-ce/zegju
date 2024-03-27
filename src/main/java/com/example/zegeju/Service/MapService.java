@@ -165,6 +165,11 @@ public class MapService {
             System.out.println(sectionIdtoBeUpdated);
             if (document.exists()) {
                 if (testId.contains("iagnostic")){
+                    if (sectionIdtoBeUpdated.equals(ALLDONE))
+                    {
+                        docRef.update("diagnosticTest", sectionIdtoBeUpdated);
+                        docRef.update("practiceTest", MATH_CALC);
+                    }
                     docRef.update("diagnosticTest", sectionIdtoBeUpdated);
             }
                 else if (testId.contains("final")){
