@@ -400,9 +400,9 @@ public class PerformanceService {
 
             if (true) generateDashboardData(dashboardData);
             generateSectionTestScore(section_Scores,email_userId,scoring);
-            responseText.put("Status","Response Submitted");
-            return responseText;
-
+//            responseText.put("Status","Response Submitted");
+            String responseTexttext="Response Submitted";
+            return responseTexttext;
 
         }
             return "no test is found";

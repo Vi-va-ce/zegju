@@ -49,6 +49,7 @@ public class MapController {
             String email=jwtTokenGenerator.decryptAccessToken(acccessToken);
 
             String userId=email;
+            System.out.println(userId);
             return mapService.getMapData(userId);
         //String statusId= (String) data.get("status");
         }

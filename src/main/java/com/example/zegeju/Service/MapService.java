@@ -142,22 +142,26 @@ public class MapService {
             //System.out.println(temp);
             DocumentReference docRef = querySnapshot.getDocuments().get(0).getReference();
             String sectionIdtoBeUpdated= new String();
-            if (sectionId.contains("eading")||sectionId.contains("READING"))
-            {
-                sectionIdtoBeUpdated=EVIDENCE_BASED;
-            }
-            else if (sectionId.contains("riting")||sectionId.contains("Writing")||sectionId.contains("WRITING"))
-            {
-                sectionIdtoBeUpdated=WRITING_LANG;
-            }
-            else if (sectionId.contains("NoCalculator")||sectionId.contains("noCalculator")||sectionId.contains("nocalculator"))
+            if (sectionId.equals("mathcalculator")||sectionId.equals("MathCalculator")||sectionId.equals("Math Calculator")||sectionId.equals("MATH calculator"))
             {
                 sectionIdtoBeUpdated=MATH_NO_CALC;
             }
-            else {
-                sectionIdtoBeUpdated=MATH_CALC;
+            else if (sectionId.contains("NoCalculator")||sectionId.contains("noCalculator")||sectionId.contains("nocalculator"))
+            {
+                sectionIdtoBeUpdated=WRITING_LANG;
             }
 
+            else if (sectionId.contains("riting")||sectionId.contains("Writing")||sectionId.contains("WRITING"))
+            {
+                sectionIdtoBeUpdated=EVIDENCE_BASED;
+            }
+            else if (sectionId.contains("eading")||sectionId.contains("READING"))
+            {
+                sectionIdtoBeUpdated=ALLDONE;
+            }
+
+
+            System.out.println(sectionIdtoBeUpdated);
             if (document.exists()) {
                 if (testId.contains("iagnostic")){
                     docRef.update("diagnosticTest", sectionIdtoBeUpdated);
