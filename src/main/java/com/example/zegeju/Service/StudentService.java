@@ -67,6 +67,19 @@ public class   StudentService {
         ApiFuture<QuerySnapshot> future2 = query2.get();
         QuerySnapshot querySnapshot2 = future2.get();
         Student student;
+        HashMap<String,Object>mapMap=new HashMap<>();
+        HashMap<String,Object>diagnosticMap=new HashMap<>();
+        HashMap<String,Object>practiceMap=new HashMap<>();
+        HashMap<String,Object>finalMap=new HashMap<>();
+        diagnosticMap.put("WhereIsTheUser","MathCalculator");
+        practiceMap.put("WhereIsTheUser","NotActivated");
+        finalMap.put("WhereIsTheUser","NotActivated");
+
+        //mapMap.put("user_id",email);
+        mapMap.put("diagnosticTest",diagnosticMap);
+        mapMap.put("practiceTest",practiceMap);
+        mapMap.put("finalTest",finalMap);
+        mapService.registerMapData(mapMap,email);
         if (querySnapshot.isEmpty()) {
             if (querySnapshot2.isEmpty()) {
                 ApiFuture<WriteResult> collectionApifuture = zgjUfirestore.collection("student_user").document(stud.getFirstName()).set(stud);
@@ -234,19 +247,7 @@ public void authenticatePhoneNumber(String phoneNumber, String verificationCode)
     }
     and return the where the user is which ia not "NotStarted" and "AllDone"
      */
-        HashMap<String,Object>mapMap=new HashMap<>();
-        HashMap<String,Object>diagnosticMap=new HashMap<>();
-        HashMap<String,Object>practiceMap=new HashMap<>();
-        HashMap<String,Object>finalMap=new HashMap<>();
-        diagnosticMap.put("WhereIsTheUser","MathCalculator");
-        practiceMap.put("WhereIsTheUser","NotActivated");
-        finalMap.put("WhereIsTheUser","NotActivated");
 
-        //mapMap.put("user_id",email);
-        mapMap.put("diagnosticTest",diagnosticMap);
-        mapMap.put("practiceTest",practiceMap);
-        mapMap.put("finalTest",finalMap);
-        mapService.registerMapData(mapMap,email);
         if (results.isEmpty()) {
             return "No Student is found with the email";
         }
