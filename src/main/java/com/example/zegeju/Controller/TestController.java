@@ -69,8 +69,20 @@ public class TestController {
 
     }
     @GetMapping("/getPracticeTest2")
-    public Object getPracticeTest2(@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException, IOException {
-        String acccessToken= loginData.get("access_token");
+    public Object getPracticeTest2(HttpServletRequest request,@RequestBody Map<String, String> loginData) throws ExecutionException, InterruptedException, IOException {
+//        String acccessToken= loginData.get("access_token");
+        String authorizationHeader = request.getHeader("Authorization");
+
+        System.out.println(authorizationHeader);
+        // Extract the token from the Authorization headers
+        String acccessToken = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        }
+
+        else {
+            System.out.println("NO AUTHORIZATION");
+        }
         //        String test_id=loginData.get("test_id");
         String test_id="practice_testTwo";
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
