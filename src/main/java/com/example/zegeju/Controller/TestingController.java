@@ -87,7 +87,7 @@ public class TestingController {
        // String authorizationHeader = request.getHeader("Authorization");
        // System.out.println(authorizationHeader);
         System.out.println(userResponse);
-        String emailtoken="es@gmail.com";
+        String emailtoken="welj.ge@gmail.com";
         return performanceService.generateResult(emailtoken,userResponse);
 
             //return performanceService.generateResult(userResponse);

@@ -383,31 +383,32 @@ public class TestController {
 
         String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
         if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
-        return practiceTestService.generateRealTimeResult(userResponse);
+            String emailtoken=jwtTokenGenerator.decryptAccessToken(acccessToken);
+        return practiceTestService.generateRealTimeResult(userResponse,emailtoken);
     }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid access token");
 
     }
-    @GetMapping("/practiceTestResponse")
-    //@RequestBody String requestBody
-    public Object generateRealTimeResult(HttpServletRequest request,@RequestBody  HashMap<String,Object>userResponse) throws ExecutionException, InterruptedException {
-        String authorizationHeader = request.getHeader("Authorization");
-        String acccessToken = null;
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
-        }
-
-        else {
-            System.out.println("NO AUTHORIZATION");
-        }
-
-        String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
-        if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
-            return practiceTestService.generateRealTimeResult(userResponse);
-        }
-        System.out.println(userResponse);
-        practiceTestService.generateRealTimeResult(userResponse);
-        return 0;
-    }
+//    @GetMapping("/practiceTestResponse")
+//    //@RequestBody String requestBody
+//    public Object generateRealTimeResult(HttpServletRequest request,@RequestBody  HashMap<String,Object>userResponse) throws ExecutionException, InterruptedException {
+//        String authorizationHeader = request.getHeader("Authorization");
+//        String acccessToken = null;
+//        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+//            acccessToken  = authorizationHeader.substring(7); // Remove "Bearer " prefix
+//        }
+//
+//        else {
+//            System.out.println("NO AUTHORIZATION");
+//        }
+//
+//        String decrpt=jwtTokenGenerator.decryptToken(acccessToken);
+//        if(decrpt.equals(jwtTokenGenerator.decryptToken(acccessToken))){
+//            return practiceTestService.generateRealTimeResult(userResponse);
+//        }
+//        System.out.println(userResponse);
+//        practiceTestService.generateRealTimeResult(userResponse);
+//        return 0;
+//    }
 
 }

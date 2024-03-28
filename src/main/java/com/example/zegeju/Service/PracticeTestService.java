@@ -91,7 +91,7 @@ public class PracticeTestService {
 //
 //    }
 
-    public HashMap<String, Object> generateRealTimeResult(HashMap<String,Object> response) throws ExecutionException, InterruptedException {
+    public HashMap<String, Object> generateRealTimeResult(HashMap<String,Object> response, String userIdd) throws ExecutionException, InterruptedException {
         /*
         * i will accept the sent data and
         * generate che if it is right
@@ -162,7 +162,7 @@ public class PracticeTestService {
         else if it contains math in it
         use the second section score
          */
-        String userId= "welde.gesesse@gmail.com";
+        String userId=userIdd;
         Firestore zgjUfirestore = FirestoreClient.getFirestore();
         DocumentReference documentReference2 = zgjUfirestore.collection("practiceTestRealTimeScore").document(userId);
         ApiFuture<DocumentSnapshot> future2 = documentReference2.get();
